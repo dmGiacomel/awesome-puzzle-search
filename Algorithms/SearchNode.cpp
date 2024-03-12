@@ -2,17 +2,35 @@
 #define SEARCH_NODE_CPP
 #include "SearchNode.hpp"
 
-SearchNode::SearchNode(SearchNode* parent, const Puzzle& s, double f, double g, double h) 
-        :parent(parent), state(std::move(s)), f(f), g(g), h(h)
-{
-}
+//default constructor
+    SearchNode::SearchNode(SearchNode* parent, const Puzzle& state, double f, double g, double h)
+        :parent(parent), state(state), f(f), g(g), h(h)
+    {
+    }
 
-SearchNode::SearchNode(const Puzzle& s)
-        :state(std::move(s))
-{
-}
+    //copy constructor
+    SearchNode::SearchNode(const SearchNode& other)
+        :parent(other.parent), state(other.state), f(other.f), g(other.g), h(other.h)
+    {
+    }
 
-SearchNode::SearchNode(const SearchNode& other)
-    : parent(other.parent), state(other.state), f(other.f), g(other.g), h(other.h) {}
+    //copy assignement operator
+    SearchNode& SearchNode::operator= (const SearchNode& other)
+    {
+        if (this != &other){
+            parent = other.parent;
+            state = other.state;
+            f = other.f;
+            g = other.g; 
+            h = other.h;
+        }
+
+        return *this;
+    }
+
+    //destructor
+    //parent should take care of it's own allocation, since this will mimic linked lists
+    SearchNode::~SearchNode(){}
+
 
 #endif

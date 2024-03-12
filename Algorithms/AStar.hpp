@@ -20,20 +20,18 @@ private:
     Puzzle initial_state;
     Puzzle goal_state;
 
-    //open and closed set
+    //open and closed set - functor needed on priority queue to create min heap
     struct GreaterF {
         bool operator()(const SearchNode& s1, const SearchNode& s2) const;
     };
-
     std::priority_queue<SearchNode, std::vector<SearchNode>, GreaterF> open;
     std::set<SearchNode> closed;
 
 
     std::list<moves> makeMovesList(SearchNode& goal_state); 
     std::list<moves> driverProcedure();
-    void update(SearchNode& state);
-
-
+    void improve(SearchNode& state);
+    std::set<Puzzle> generateSuccessors();
 
 };
 
