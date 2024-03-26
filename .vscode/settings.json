@@ -46,6 +46,7 @@
         "typeinfo": "cpp",
         "list": "cpp",
         "cinttypes": "cpp",
-        "set": "cpp"
+        "set": "cpp",
+        "unordered_set": "cpp"
     }
 }

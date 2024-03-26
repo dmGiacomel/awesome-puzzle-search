@@ -15,6 +15,9 @@ private:
 
 public:
 
+    //default default
+    Matrix();
+
     //Copy Constructor
     Matrix(const Matrix& other);
 
@@ -24,23 +27,23 @@ public:
     Matrix(int rows, int columns);
     Matrix(int rows, int columns, datatype initial_value);
     ~Matrix();
-    int getRows();
-    int getColumns();
-    std::vector<datatype> getRowValues(int row);
-    std::vector<datatype> getColumnValues(int column);
-    datatype** getRawPointer();
-    datatype getValueAt(int row, int column);
+    int getRows() const;
+    int getColumns()const;
+    std::vector<datatype> getRowValues(int row) const;
+    std::vector<datatype> getColumnValues(int column) const;
+    datatype** getRawPointer() const;
+    datatype getValueAt(int row, int column) const;
     void setValueAt(int row, int column, datatype value);
 
     void setValueToAllPositions(datatype data);
-    void printMatrix();
+    void printMatrix() const;
 
     //move assignement operator
     Matrix<datatype>& operator=(Matrix&& other) noexcept;
     //copy assignement operator
     Matrix<datatype>& operator=(const Matrix& other);
 
-    bool operator== (const Matrix& other);
+    bool operator== (const Matrix& other) const;
 
 };
 
@@ -87,6 +90,9 @@ Matrix<datatype>& Matrix<datatype>::operator=(Matrix&& other) noexcept {
     return *this;
 }
 
+template <typename datatype>
+Matrix<datatype>::Matrix(){}
+
 
 //copy constructor
 template <typename datatype>
@@ -117,8 +123,6 @@ Matrix<datatype>::Matrix(Matrix&& other) noexcept
 
     //std::cout << "Matrix Moved!\n"; 
 }
-
-
 
 template<typename datatype>
 datatype** Matrix<datatype>::allocateMatrix(int rows, int columns){
@@ -177,22 +181,22 @@ Matrix<datatype>::~Matrix(){
 }
 
 template <typename datatype>
-int Matrix<datatype>::getColumns(){
+int Matrix<datatype>::getColumns() const{
     return this->columns;
 }
 
 template <typename datatype>
-int Matrix<datatype>::getRows(){
+int Matrix<datatype>::getRows() const{
     return this->rows;
 }
 
 template <typename datatype>
-datatype** Matrix<datatype>::getRawPointer(){
+datatype** Matrix<datatype>::getRawPointer() const{
     return matrix;
 }
 
 template <typename datatype>
-std::vector<datatype> Matrix<datatype>::getRowValues(int row){
+std::vector<datatype> Matrix<datatype>::getRowValues(int row) const {
 
     std::vector<datatype> row_values;
     for(int i = 0; i < columns; i++)
@@ -201,7 +205,7 @@ std::vector<datatype> Matrix<datatype>::getRowValues(int row){
 }
 
 template <typename datatype>
-std::vector<datatype> Matrix<datatype>::getColumnValues(int column){
+std::vector<datatype> Matrix<datatype>::getColumnValues(int column) const{
 
     std::vector<datatype> column_values;
     for(int i = 0; i < rows; i++)
@@ -210,7 +214,7 @@ std::vector<datatype> Matrix<datatype>::getColumnValues(int column){
 }
 
 template <typename datatype>
-datatype Matrix<datatype>::getValueAt(int row, int column){
+datatype Matrix<datatype>::getValueAt(int row, int column) const{
     return matrix[row][column];
 }
 
@@ -229,7 +233,7 @@ void Matrix<datatype>::setValueToAllPositions(datatype data){
 }
 
 template <typename datatype>
-void Matrix<datatype>::printMatrix(){
+void Matrix<datatype>::printMatrix() const{
     for(int i = 0; i < rows; i++){
         for(int j = 0; j < columns; j++){
             std::cout << matrix[i][j] << "\t";
@@ -239,7 +243,7 @@ void Matrix<datatype>::printMatrix(){
 }
 
 template <typename datatype>
-bool Matrix<datatype>::operator== (const Matrix& other) {
+bool Matrix<datatype>::operator== (const Matrix& other) const{
     if (other.rows != this->rows || other.columns != this->columns)
         return false;
     

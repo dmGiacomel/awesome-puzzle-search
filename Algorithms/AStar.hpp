@@ -13,25 +13,34 @@ class AStar : SolvingAlgorithm{
 public:
     std::list<moves> solve(const Puzzle& initial_state, 
                            const Puzzle& goal_state,
-                           Heuristics* heuristic = nullptr);
+                           Heuristics* heuristic);
 
+    AStar();
+    virtual ~AStar();
 private:
     Heuristics* heuristics;
     Puzzle initial_state;
     Puzzle goal_state;
 
     //open and closed set - functor needed on priority queue to create min heap
-    struct GreaterF {
+    struct GreaterF{
         bool operator()(const SearchNode& s1, const SearchNode& s2) const;
     };
     std::priority_queue<SearchNode, std::vector<SearchNode>, GreaterF> open;
-    std::set<SearchNode> closed;
 
+    struct HashSearchNode{
+        size_t operator()(const SearchNode& s1) const;
+    };
+    struct EqualsSearchNode{
+        bool operator()(const SearchNode& s1, const SearchNode& s2) const;
+    };
+    
+    std::unordered_set<SearchNode, HashSearchNode, EqualsSearchNode> closed;
 
-    std::list<moves> makeMovesList(SearchNode& goal_state); 
+    std::list<moves> makeMovesList(const SearchNode& goal_state); 
     std::list<moves> driverProcedure();
-    void improve(SearchNode& state);
-    std::set<Puzzle> generateSuccessors();
+    void improve(const SearchNode& state);
+    std::set<SearchNode> generateSuccessors(const SearchNode& state);
 
 };
 

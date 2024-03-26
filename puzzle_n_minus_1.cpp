@@ -2,14 +2,16 @@
 #define puzzle_n_minus_1_cpp
 #include "puzzle_n_minus_1.hpp"
 
+Puzzle::Puzzle(){};
+
 //default constuctor
-Puzzle::Puzzle(int rows, int columns)
+Puzzle::Puzzle(unsigned char rows, unsigned char columns)
     :board(rows, columns)
 {
-    short tile_fill{0};
+    unsigned char tile_fill{0};
     
-    for(int i = 0; i < rows; i++)
-        for(int j = 0; j < columns; j++)
+    for(unsigned char i = 0; i < rows; i++)
+        for(unsigned char j = 0; j < columns; j++)
             board.setValueAt(i, j, tile_fill++);
 
     position_of_empty = std::make_tuple(0, 0);
@@ -27,12 +29,14 @@ Puzzle::Puzzle(const Puzzle& other)
 
 //copy assignment constructor
 Puzzle& Puzzle::operator=(const Puzzle& other){
+
+    std::cout << "in puzzle copy assignement operator\n";
     if(this != &other){
         board = other.board;
         position_of_empty = other.position_of_empty;
     }
 
-    //std::cout << "Puzzle copied!\n";
+    std::cout << "Puzzle copied!" << std::endl;
     return *this;
 }
 
@@ -57,7 +61,7 @@ Puzzle& Puzzle::operator=(Puzzle&& other) noexcept{
 
 Puzzle::~Puzzle(){}
 
-std::set<moves> Puzzle::availableMoves(){
+std::set<moves> Puzzle::availableMoves() const{
     std::set<moves> available_moves;
     
     //if empty is at top row
@@ -214,19 +218,30 @@ bool Puzzle::makeMove(moves move){
 
 }
 
-short Puzzle::getTileAt(int row, int column){
+unsigned char Puzzle::getTileAt(unsigned char row, unsigned char column) const{
     return board.getValueAt(row, column);
 }
 
-void Puzzle::printBoard() {
+void Puzzle::printBoard() const{
     board.printMatrix();
 }
 
-const Matrix<short>& Puzzle::getBoard() const{
+const Matrix<unsigned char>& Puzzle::getBoard() const {
     return board;
 }
 
-bool Puzzle::operator== (const Puzzle& other){
+bool Puzzle::operator== (const Puzzle& other) const{
     return (this->board == other.board);
 }
+
+bool Puzzle::isSolved() const{
+    return Puzzle(board.getRows(), board.getColumns()) == *this;
+}
+
+std::vector<unsigned char> Puzzle::getPuzzleAsString () const{
+
+    auto buffer = board.getRawPointer();
+    return std::vector<unsigned char>(buffer[0], buffer[0] + board.getRows() * board.getColumns());
+}
+
 #endif

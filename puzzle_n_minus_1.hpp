@@ -5,13 +5,17 @@
 #include <set>
 #include "Matrix.hpp"
 
-enum moves: unsigned char {left, up, right, down};
+enum moves: unsigned char {left, up, right, down, none};
+enum move_contraries: unsigned char {r, d, l, u, n};
 
 class Puzzle{
 public:
 
+    //Really Default Constructor
+    Puzzle();
+
     //Default Constructor
-    Puzzle(int rows, int columns);
+    Puzzle(unsigned char rows, unsigned char columns);
 
     //copy constructor
     Puzzle(const Puzzle& other);
@@ -28,18 +32,19 @@ public:
     //destructor
     ~Puzzle();
 
-    bool isSolved();
+    bool isSolved() const;
     bool makeMove(moves move);
-    short getTileAt(int row, int column);
-    void printBoard();
-    const Matrix<short>& getBoard() const;
-    std::set<moves> availableMoves();
-    
-    bool operator== (const Puzzle& other);
+    unsigned char getTileAt(unsigned char row, unsigned char column) const;
+    void printBoard() const;
+    const Matrix<unsigned char>& getBoard() const;
+    std::set<moves> availableMoves() const;
+
+    std::vector<unsigned char> getPuzzleAsString () const;
+    bool operator== (const Puzzle& other) const;
 private:
     
-    Matrix<short> board;
-    std::tuple<int, int> position_of_empty;
+    Matrix<unsigned char> board;
+    std::tuple<unsigned char, unsigned char> position_of_empty;
 
     void moveUp();
     void moveLeft();
@@ -47,6 +52,4 @@ private:
     void moveDown();
     
 };
-
-
 #endif

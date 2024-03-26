@@ -1,1 +1,1 @@
-g++ testes.cpp puzzle_n_minus_1.cpp Heuristics/Zero.cpp Heuristics/Heuristics.cpp Algorithms/SolvingAlgorithm.cpp Algorithms/AStar.cpp Algorithms/SearchNode.cpp -o testes -O2
+g++ testes.cpp puzzle_n_minus_1.cpp Heuristics/Zero.cpp Heuristics/Heuristics.cpp Algorithms/SolvingAlgorithm.cpp Algorithms/AStar.cpp Algorithms/SearchNode.cpp PuzzleUtils.cpp -o testes -O2

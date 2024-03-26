@@ -5,6 +5,7 @@
 typedef struct SearchNode{
 
     SearchNode* parent;
+    moves generated_by; 
     Puzzle state;
     double f;
     double g; 
@@ -12,7 +13,7 @@ typedef struct SearchNode{
 
     //default constructor
     //Puzzle must be a copy
-    SearchNode(SearchNode* parent, const Puzzle& s, double f, double g, double h); 
+    SearchNode(SearchNode* parent, moves generated_by, const Puzzle& s, double f, double g, double h); 
     //SearchNode();
 
     //copy constructor
@@ -25,6 +26,8 @@ typedef struct SearchNode{
     //parent should take care of it's own mem., since this will mimic linked lists
     ~SearchNode();
 
+    //not much difference, just for the red-black from std::set
+    bool operator<(const SearchNode& other) const;
 }SearchNode;
 
 #endif
