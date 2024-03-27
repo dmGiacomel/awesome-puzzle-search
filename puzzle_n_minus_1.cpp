@@ -2,7 +2,9 @@
 #define puzzle_n_minus_1_cpp
 #include "puzzle_n_minus_1.hpp"
 
-Puzzle::Puzzle(){};
+#define DEBUGGING_MODE_PUZZLE
+
+//Puzzle::Puzzle(){};
 
 //default constuctor
 Puzzle::Puzzle(unsigned char rows, unsigned char columns)
@@ -30,13 +32,13 @@ Puzzle::Puzzle(const Puzzle& other)
 //copy assignment constructor
 Puzzle& Puzzle::operator=(const Puzzle& other){
 
-    std::cout << "in puzzle copy assignement operator\n";
+    //std::cout << "in puzzle copy assignement operator\n";
     if(this != &other){
         board = other.board;
         position_of_empty = other.position_of_empty;
     }
 
-    std::cout << "Puzzle copied!" << std::endl;
+    //std::cout << "Puzzle copied!" << std::endl;
     return *this;
 }
 
@@ -235,7 +237,8 @@ bool Puzzle::operator== (const Puzzle& other) const{
 }
 
 bool Puzzle::isSolved() const{
-    return Puzzle(board.getRows(), board.getColumns()) == *this;
+    Puzzle p(board.getRows(), board.getColumns());
+    return p == *this;
 }
 
 std::vector<unsigned char> Puzzle::getPuzzleAsString () const{

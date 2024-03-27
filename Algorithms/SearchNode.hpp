@@ -28,6 +28,7 @@ typedef struct SearchNode{
 
     //not much difference, just for the red-black from std::set
     bool operator<(const SearchNode& other) const;
+    bool operator==(const SearchNode& other) const;
 }SearchNode;
 
 #endif

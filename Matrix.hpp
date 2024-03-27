@@ -3,6 +3,10 @@
 #include <iostream>
 #include <vector>
 
+#define DEBUGGIN_MODE___DONE___
+
+
+
 template <typename datatype>
 class Matrix{
 private:
@@ -16,7 +20,7 @@ private:
 public:
 
     //default default
-    Matrix();
+    //Matrix();
 
     //Copy Constructor
     Matrix(const Matrix& other);
@@ -67,6 +71,10 @@ Matrix<datatype>& Matrix<datatype>::operator=(const Matrix& other){
         
         //std::cout << "Matrix Copied!\n";
     }
+
+    #ifdef DEBUGGIN_MODE
+    std::cout << "matriz copiada por operador de cópia\n";
+    #endif
     return *this;
 }
 
@@ -87,11 +95,19 @@ Matrix<datatype>& Matrix<datatype>::operator=(Matrix&& other) noexcept {
         //std::cout << "Matrix Moved!\n";
     }
 
+    #ifdef DEBUGGIN_MODE
+    std::cout << "matriz movida por operador de movimentação\n";
+    #endif
     return *this;
 }
 
-template <typename datatype>
-Matrix<datatype>::Matrix(){}
+// template <typename datatype>
+// Matrix<datatype>::Matrix(){
+
+//     #ifdef DEBUGGIN_MODE
+//     std::cout << "Matriz construída por construtor padrão\n";
+//     #endif
+// }
 
 
 //copy constructor
@@ -108,6 +124,9 @@ Matrix<datatype>::Matrix(const Matrix& other)
         }
     }
 
+    #ifdef DEBUGGIN_MODE
+    std::cout << "matriz copiada por construtor de cópia\n";
+    #endif
     //std::cout << "Matrix Copied!\n";
 
 }
@@ -122,11 +141,17 @@ Matrix<datatype>::Matrix(Matrix&& other) noexcept
     other.columns = 0;
 
     //std::cout << "Matrix Moved!\n"; 
+    #ifdef DEBUGGIN_MODE
+    std::cout << "matriz movida por construtor de movimentação\n";
+    #endif
 }
 
 template<typename datatype>
 datatype** Matrix<datatype>::allocateMatrix(int rows, int columns){
     
+    #ifdef DEBUGGIN_MODE
+    std::cout << "antes de alocar matriz\n";
+    #endif
     datatype** matrix; 
 
     matrix = (datatype**)calloc(rows, sizeof(datatype*));
@@ -136,24 +161,37 @@ datatype** Matrix<datatype>::allocateMatrix(int rows, int columns){
         matrix[i] = matrix[0] + i * columns;
     }
 
+    #ifdef DEBUGGIN_MODE
+    std::cout << "depois de alocar matriz\n";
+    #endif
     return matrix;
 }
 
 template <typename datatype> 
 Matrix<datatype>::Matrix(int rows, int columns)
     :rows(rows), columns(columns) {
+
+    #ifdef DEBUGGIN_MODE
+    std::cout << " começo matriz construida por linha e coluna\n";
+    #endif
     this->matrix = allocateMatrix(rows, columns);
     for (int i = 0; i < rows; i++)
         for(int j = 0; j < columns; j++)
             this->matrix[i][j] = datatype(0);
     
     //std::cout << "Matrix Created!\n";
+    #ifdef DEBUGGIN_MODE
+    std::cout << " fim construtor linha e coluna\n";
+    #endif
 }
 
 template <typename datatype> 
 Matrix<datatype>::Matrix(int rows, int columns, datatype initial_value)
     :rows(rows), columns(columns) {
 
+    #ifdef DEBUGGIN_MODE
+    std::cout << " começo matriz construida por linha, valor inicial e coluna\n";
+    #endif
     this->matrix = allocateMatrix(rows, columns);
 
     for(int i = 0; i < rows; i++){
@@ -162,21 +200,37 @@ Matrix<datatype>::Matrix(int rows, int columns, datatype initial_value)
         }
     }
 
+    #ifdef DEBUGGIN_MODE
+    std::cout << " começo matriz construida por linha, valor inicial e coluna\n";
+    #endif
     //std::cout << "Matrix Created!\n";
 
 }
 
 template <typename datatype>
 void Matrix<datatype>::freeMatrix(datatype** matrix){
+    #ifdef DEBUGGIN_MODE
+    std::cout << "dentro do método free\n";
+    #endif
     if (matrix != nullptr){
         free(matrix[0]);
         free(matrix);
     }
+    #ifdef DEBUGGIN_MODE
+    std::cout << "depois dos free tudo\n";
+    #endif
 }
 
 template <typename datatype>
 Matrix<datatype>::~Matrix(){
+
+    #ifdef DEBUGGIN_MODE
+    std::cout << " começo destrutor\n";
+    #endif
     freeMatrix(matrix);
+    #ifdef DEBUGGIN_MODE
+    std::cout << " fim destrutor\n";
+    #endif
     //std::cout << "Matrix Deleted!\n";
 }
 
@@ -232,11 +286,12 @@ void Matrix<datatype>::setValueToAllPositions(datatype data){
     }
 }
 
+//ONLY WORKS FOR INTEGER TYPES 
 template <typename datatype>
 void Matrix<datatype>::printMatrix() const{
     for(int i = 0; i < rows; i++){
         for(int j = 0; j < columns; j++){
-            std::cout << matrix[i][j] << "\t";
+            std::cout << std::dec << +matrix[i][j] << "\t";
         }
         std::cout << "\n";
     }

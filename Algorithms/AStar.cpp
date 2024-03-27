@@ -3,42 +3,42 @@
 #include "AStar.hpp"
 #include <vector>
 
-//depois eu vejo isso
-AStar::AStar(){}
+#define DEBUGGING_MODE_ASTAR___done___
 
+//depois eu vejo isso
+//ISSUE -> THIS CONSTRUCTORS ARE DUMB. initials doesn't mean nothing
+//'cause the only way to interact wtih the object is through solve() method
+
+AStar::AStar()
+    :heuristics(nullptr), initial_state(3,3), goal_state(3,3)
+{
+}
 AStar::~AStar(){}
 
 std::list<moves> AStar::solve(const Puzzle& initial_state, 
                               const Puzzle& goal_state,
                               Heuristics* heuristic)
 {
-    std::cout << "Right after calling solve method\n";
-
+    
     heuristics = heuristic;
 
-    std::cout << "Heuristics setted\n";
-
     this->initial_state = initial_state;
-
-    std::cout << "Initial state setted\n";
-
     this->goal_state = goal_state;
 
-    std::cout << "Goal state setted\n";
-
-
-    std::cout << "Before clearing open set\n";
+    #ifdef DEBUGGING_MODE_ASTAR
+        std::cout << "initial_state: \n";
+        initial_state.printBoard();
+        std::cout << std::endl;
+        std::cout << "goal_state: \n";
+        goal_state.printBoard();
+        std::cout << std::endl;
+    #endif
 
     //making sure open and closed are empty
     while (!open.empty())
         open.pop();
 
-    std::cout << "Before clearing closed set\n";
-
     closed.clear();
-
-    std::cout << "Before calling driver procedure\n";
-
     std::list<moves> path = driverProcedure();
 
     return path;
@@ -47,12 +47,22 @@ std::list<moves> AStar::solve(const Puzzle& initial_state,
 //may good help us all if the heuristic is non-consistent
 std::list<moves> AStar::driverProcedure(){
 
+    
     //starting the open set with the initial state
     //closed set starts empty (guaranteed by solve())
     double initial_state_heuristics = heuristics->evaluate(initial_state); //initialize estimate
     open.push(SearchNode(nullptr, moves(none), initial_state, initial_state_heuristics, 0.0, initial_state_heuristics));
     //as long as there are frontier nodes
+
+    #ifdef DEBUGGING_MODE_ASTAR
+        unsigned long long int iteration(0);
+    #endif
+
+
     while(!open.empty()){
+        #ifdef DEBUGGING_MODE_ASTAR
+            std::cout<< "a_star while loop iteration: " << iteration++ << "\n";
+        #endif
         
         //done this way so we can retrieve the path easily after the execution
         //avoid dangling pointers - closed will take care of memory
@@ -61,15 +71,20 @@ std::list<moves> AStar::driverProcedure(){
         const SearchNode& current = *closed.emplace(std::move(*node)).first;  
 
         if(current.state.isSolved()) {
+            //std::cout << "done!! :DD\n";
             return makeMovesList(current);                      //goal found, return solution
         }else{
             std::set<SearchNode> successors = generateSuccessors(current);
+
             for (auto& i : successors){
                 improve(i);
             }
         }
     }
 
+    #ifdef DEBUGGING_MODE_ASTAR
+        std::cout << "no solution at all\n";
+    #endif
     return std::list<moves>();              //no solution exists
 }
 
@@ -83,23 +98,61 @@ void AStar::improve(const SearchNode& state){
             closed.extract(state_in_closed);
         }
     }else{ //with consistent heuristics it always falls here
+
+        #ifdef DEBUGGING_MODE_ASTAR
+            std::cout << "improve method - state is new!\n";
+        #endif
+
         open.emplace(state);
     }
 }
 
 std::set<SearchNode> AStar::generateSuccessors(const SearchNode& node){
     
+    #ifdef DEBUGGING_MODE_ASTAR
+        std::cout << "inside generate successor function\n"; 
+    #endif
     std::set<SearchNode> successors;
     std::set<moves> available_moves = node.state.availableMoves();
+
+    #ifdef DEBUGGING_MODE_ASTAR
+        std::cout << "available moves: ";
+        for(auto i: available_moves){
+            std::cout << +i << " ";
+        }
+        std::cout << "\n";
+    #endif
 
     double g = node.g + 1;  //unit cost abreviation for w(parent, node)
     for (auto i: available_moves){        
         Puzzle temp = node.state;
         temp.makeMove(i);
         double h = heuristics->evaluate(temp); 
-        successors.insert(SearchNode(const_cast<SearchNode*>(&node), i, temp, h + g, g, h));
+
+        #ifdef DEBUGGING_MODE_ASTAR
+            bool inserted = 
+        #endif
+        
+        successors.insert(SearchNode(const_cast<SearchNode*>(&node), i, temp, h + g, g, h)).second;
+
+        #ifdef DEBUGGING_MODE_ASTAR
+            std::cout << "New node inserted?:" << inserted << "\n"; 
+        #endif
     }
 
+    #ifdef DEBUGGING_MODE_ASTAR
+        std::cout << "number of states in successors: " << successors.size() << "\n";
+        std::cout << "successors found: \n";              
+        for (auto i : successors){
+            i.state.printBoard();
+            std::cout << "\n";
+        }
+    #endif
+
+    #ifdef DEBUGGING_MODE_ASTAR
+        std::cout << "end of generate successors\n"; 
+    #endif
+    
     return successors;
 }
 
@@ -113,7 +166,7 @@ std::list<moves> AStar::makeMovesList(const SearchNode& goal_state){
         aux_node = *aux_node.parent; 
     }
 
-    return std::move(path);
+    return path;
 }
 
 bool AStar::GreaterF::operator()(const SearchNode& s1, const SearchNode& s2) const{

@@ -2,12 +2,84 @@
 #include "puzzle_n_minus_1.hpp"
 #include "Algorithms/AStar.hpp"
 #include "Heuristics/Zero.hpp"
+#include <string>
+
+namespace MovementsHandler{
+
+    moves getOpposite(moves m){
+        switch(m){
+            case left: 
+                return right;
+                break;
+            case right:
+                return left;
+                break;
+            case down: 
+                return up;
+                break;
+            case up:
+                return down;
+                break;
+            default: 
+                return none;
+                break;
+        };
+    }
+
+    std::string getName(moves m){
+        switch(m){
+            case left: 
+                return "L";
+                break;
+            case right:
+                return "R";
+                break;
+            case down: 
+                return "D";
+                break;
+            case up:
+                return "U";
+                break;
+            default: 
+                return "none";
+                break;
+        };
+    }
+
+    std::list<moves> getOpposites(std::list<moves> moves_list){
+        
+        std::list<moves> opposites;
+
+        for (auto i : moves_list){
+                opposites.push_back(getOpposite(i));
+        }
+
+        return opposites;
+    }
+
+
+    std::list<std::string> getNames(std::list<moves> moves_list){
+
+        std::list<std::string> moves_names;
+        for (auto i : moves_list){
+            
+            moves_names.push_back(getName(i));
+        
+        }
+
+        return moves_names;
+    }
+
+    std::list<std::string> getOppositeNames(std::list<moves> moves_list){
+
+        return getNames(getOpposites(moves_list));
+    }
+}
 
 int main(){
     
     Puzzle p(3,3);
-
-        p.printBoard();
+    Puzzle goal(3,3);
 
     Heuristics* zero = new Zero();
     AStar a_estrela;
@@ -17,16 +89,30 @@ int main(){
     p.makeMove(left);
     p.makeMove(up);
 
+    std::cout << "Initial State: \n";
     p.printBoard();
+    std::cout << std::endl;
 
-    std::cout << "\n";
+    std::cout << "GoalState: \n";
+    goal.printBoard();
+    std::cout << std::endl;
 
-    std::cout << "Before calling solve method\n";
-    std::list<moves> sequence = a_estrela.solve(Puzzle(3,3), p, zero);
-
+    std::list<std::string> sequence = MovementsHandler::
+                                      getOppositeNames(a_estrela.solve(p, Puzzle(3,3), zero));
+    std::cout << "Solution sequence: ";
     for (auto i : sequence){
-        std::cout << i;
+        std::cout << i << " ";
+        //p.makeMove(MovementsHandler::getOpposite());
     }
-    
+    std::cout << std::endl;
+
+
+    //Matrix<unsigned char> m(3,3);
+    //m.printMatrix();
+
+    //Puzzle p(3,3);
+    //p.printBoard();  
+
+   
     return 0;
 }

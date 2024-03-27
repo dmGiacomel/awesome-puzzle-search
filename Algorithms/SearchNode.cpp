@@ -33,7 +33,14 @@
     //parent should take care of it's own allocation, since this will mimic linked lists
     SearchNode::~SearchNode(){}
 
+    //whatever i guess? ...
     bool SearchNode::operator<(const SearchNode& other) const{
-        return this->f < other.f;
+
+        return this->state.getPuzzleAsString() < other.state.getPuzzleAsString();
     }
+
+    bool SearchNode::operator==(const SearchNode& other) const{
+        return this->state == other.state;
+    }
+    
 #endif

@@ -8,6 +8,8 @@
 #include <list>
 #include <set>
 
+//ISSUE -> DEFAULT CONSTRUCTOR IS CODED IN A VERY DUMB MANNER
+
 class AStar : SolvingAlgorithm{   
 
 public:
