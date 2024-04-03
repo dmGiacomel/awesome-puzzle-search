@@ -166,6 +166,7 @@ std::list<moves> AStar::makeMovesList(const SearchNode& goal_state){
         aux_node = *aux_node.parent; 
     }
 
+    path.reverse();
     return path;
 }
 

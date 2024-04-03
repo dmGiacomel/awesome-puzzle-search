@@ -1,7 +1,7 @@
 #include <iostream>
 #include "puzzle_n_minus_1.hpp"
 #include "Algorithms/AStar.hpp"
-#include "Heuristics/Zero.hpp"
+#include "Heuristics/MisplacedTileCount.hpp"
 #include <string>
 #include <random>
 
@@ -79,10 +79,10 @@ namespace MovementsHandler{
 
 int main(){
     
-    Puzzle p(3,3);
-    Puzzle goal(3,3);
+    Puzzle p(4,4);
+    Puzzle goal(4,4);
 
-    Heuristics* zero = new Zero();
+    Heuristics* zero = new MisplacedTileCount();
     AStar a_estrela;
 
     //arbitrary seed to generate always the same random

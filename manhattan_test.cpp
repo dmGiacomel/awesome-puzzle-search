@@ -2,6 +2,7 @@
 #include "puzzle_n_minus_1.hpp"
 #include "Algorithms/AStar.hpp"
 #include "Heuristics/Zero.hpp"
+#include "Heuristics/Manhattan.hpp"
 #include <string>
 #include <random>
 
@@ -79,10 +80,10 @@ namespace MovementsHandler{
 
 int main(){
     
-    Puzzle p(3,3);
-    Puzzle goal(3,3);
+    Puzzle p(4,4);
+    Puzzle goal(4,4);
 
-    Heuristics* zero = new Zero();
+    Heuristics* zero = new Manhattan();
     AStar a_estrela;
 
     //arbitrary seed to generate always the same random
@@ -103,7 +104,7 @@ int main(){
     std::cout << std::endl;
 
     std::list<std::string> sequence = MovementsHandler::
-                                      getNames(a_estrela.solve(p, Puzzle(3,3), zero));
+                                      getNames(a_estrela.solve(p, goal, zero));
     std::cout << "Solution sequence: ";
     for (auto i : sequence){
         std::cout << i << " ";
