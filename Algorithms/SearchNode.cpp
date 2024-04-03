@@ -35,7 +35,6 @@
 
     //whatever i guess? ...
     bool SearchNode::operator<(const SearchNode& other) const{
-
         return this->state.getPuzzleAsString() < other.state.getPuzzleAsString();
     }
 

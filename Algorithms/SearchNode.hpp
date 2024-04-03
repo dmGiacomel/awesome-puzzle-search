@@ -3,7 +3,7 @@
 #include "../puzzle_n_minus_1.hpp"
 
 typedef struct SearchNode{
-
+    
     SearchNode* parent;
     moves generated_by; 
     Puzzle state;

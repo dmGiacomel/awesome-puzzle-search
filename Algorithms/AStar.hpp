@@ -13,7 +13,7 @@
 class AStar : SolvingAlgorithm{   
 
 public:
-    std::list<moves> solve(const Puzzle& initial_state, 
+    virtual std::list<moves> solve(const Puzzle& initial_state, 
                            const Puzzle& goal_state,
                            Heuristics* heuristic);
 
