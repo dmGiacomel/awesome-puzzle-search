@@ -3,6 +3,7 @@
 #include "SolvingAlgorithm.hpp"
 #include "SearchNode.hpp"
 #include "set"
+#include <limits.h>
 
 class IDAStar : public SolvingAlgorithm{
 public: 
@@ -19,10 +20,11 @@ private:
     Heuristics* heuristics;
     Puzzle initial_state;
     Puzzle goal_state;
+    int global_threshold;
 
     std::list<moves> makeMovesList(const SearchNode& goal_state);
     std::list<moves> driverProcedure();
-    std::list<moves> idaStar();
+    std::list<moves> idaStar(const SearchNode& state, int upper_bound);
     std::set<SearchNode> generateSuccessors(const SearchNode& state);
 
 };

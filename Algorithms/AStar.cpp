@@ -46,7 +46,6 @@ std::list<moves> AStar::solve(const Puzzle& initial_state,
 
 //may good help us all if the heuristic is non-consistent
 std::list<moves> AStar::driverProcedure(){
-
     
     //starting the open set with the initial state
     //closed set starts empty (guaranteed by solve())

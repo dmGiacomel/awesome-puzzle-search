@@ -2,6 +2,9 @@
 #define IDASTAR_CPP
 #include "IDAStar.hpp"
 
+//mudar isso depois
+
+
 std::list<moves> IDAStar::solve(const Puzzle& initial_state, 
                                 const Puzzle& goal_state,
                                 Heuristics* heuristic)
@@ -10,6 +13,7 @@ std::list<moves> IDAStar::solve(const Puzzle& initial_state,
     this->heuristics = heuristic;
     this->initial_state = initial_state;
     this->goal_state = goal_state;
+    global_threshold = 0;
 
     std::list<moves> path = driverProcedure();
     return path;
@@ -18,13 +22,48 @@ std::list<moves> IDAStar::solve(const Puzzle& initial_state,
 IDAStar::IDAStar(){}
 IDAStar::~IDAStar(){}
 
-
 std::list<moves> IDAStar::driverProcedure(){
     
+    global_threshold = heuristics->evaluate(initial_state);         //initializing global threshold
+    std::list<moves> best_path;                                         //initializing solution path
+    double initial_g = 0;
+    double initial_h = heuristics->evaluate(initial_state);
+
+    while (best_path.empty() && global_threshold != INT_MAX){
+        int local_threshold = global_threshold;
+        global_threshold = INT_MAX;
+
+        best_path = idaStar(SearchNode(nullptr, none, initial_state, initial_g + initial_h, initial_g, initial_h), local_threshold);
+    }
+
+    return best_path;
 }
 
-std::list<moves> IDAStar::idaStar(){
+// side_effect -> update global threshold
+std::list<moves> IDAStar::idaStar(const SearchNode& current, int upper_bound){
 
+    if (current.state.isSolved())
+        return makeMovesList(current);
+    
+    std::set<SearchNode> successors = generateSuccessors(current);
+
+    for (auto& current_node : successors){
+        // verificar se o custo é maior que 
+        if (current_node.f > upper_bound){                    //cost exceeds old bound 
+            if(current_node.f < global_threshold){            //cost exceeds new bound 
+
+                //leaf node in the search tree
+                global_threshold = current_node.f;             //update new bound
+            }
+
+        }else{
+            std::list<moves> path = idaStar(current_node, upper_bound);
+            if(!path.empty()){
+                return path;
+            }
+        }
+    }
+    return std::list<moves>();
 }
 
 std::set<SearchNode> IDAStar::generateSuccessors(const SearchNode& node){
