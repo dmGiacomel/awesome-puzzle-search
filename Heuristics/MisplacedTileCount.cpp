@@ -11,7 +11,8 @@ int MisplacedTileCount::evaluate (const Puzzle& puzzle_state){
 
     for(int i = 0; i < rows; i++){
         for(int j = 0; j < rows; j++){
-            if(i != (board.getValueAt(i,j) / columns) || j != board.getValueAt(i,j) % columns){
+            unsigned char current_tile = board.getValueAt(i,j);
+            if(current_tile != 0 && (i != current_tile / columns || j != current_tile % columns)){
                 count++;
             }
         }

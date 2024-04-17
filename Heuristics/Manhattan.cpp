@@ -11,7 +11,9 @@ int Manhattan::evaluate (const Puzzle& puzzle_state){
     for(int i = 0; i < rows; i++){
         for(int j = 0; j < columns; j++){
             unsigned char current_tile = puzzle_state.getTileAt(i, j);
-            estimate += std::abs(i - current_tile/columns) + std::abs(j - current_tile % columns);
+            if (current_tile != 0){
+                estimate += std::abs(i - current_tile/columns) + std::abs(j - current_tile % columns);
+            }
         }
     }
 

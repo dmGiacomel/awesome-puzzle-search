@@ -4,6 +4,7 @@
 
 //mudar isso depois
 
+static int avaliacoes_inconsistentes = 0;
 
 std::list<moves> IDAStar::solve(const Puzzle& initial_state, 
                                 const Puzzle& goal_state,
@@ -19,7 +20,14 @@ std::list<moves> IDAStar::solve(const Puzzle& initial_state,
     return path;
 }
 
-IDAStar::IDAStar(){}
+//ISSUE -> THIS CONSTRUCTORS ARE DUMB. initials doesn't mean nothing
+//'cause the only way to interact wtih the object is through solve() method
+
+IDAStar::IDAStar()
+    :heuristics(nullptr), initial_state(3,3), goal_state(3,3)
+{
+}
+
 IDAStar::~IDAStar(){}
 
 std::list<moves> IDAStar::driverProcedure(){
@@ -28,8 +36,10 @@ std::list<moves> IDAStar::driverProcedure(){
     std::list<moves> best_path;                                         //initializing solution path
     double initial_g = 0;
     double initial_h = heuristics->evaluate(initial_state);
+        std::cout << "IDA running...\n ";
 
     while (best_path.empty() && global_threshold != INT_MAX){
+        std::cout << "Current global threshold: " << global_threshold << "\n";
         int local_threshold = global_threshold;
         global_threshold = INT_MAX;
 
@@ -42,27 +52,44 @@ std::list<moves> IDAStar::driverProcedure(){
 // side_effect -> update global threshold
 std::list<moves> IDAStar::idaStar(const SearchNode& current, int upper_bound){
 
-    if (current.state.isSolved())
+    if (current.state.isSolved()){
+        std::cout << "f-value da solucao: " << current.f << "\n";
+        std::cout << "g-value da solucao: " << current.g << "\n";
+        std::cout << "h-value da solucao: " << current.h << "\n";
+
+        std::cout << "found!\n";
         return makeMovesList(current);
-    
+    }
+
     std::set<SearchNode> successors = generateSuccessors(current);
 
     for (auto& current_node : successors){
         // verificar se o custo é maior que 
+        //leaf node in the search tree
+
         if (current_node.f > upper_bound){                    //cost exceeds old bound 
             if(current_node.f < global_threshold){            //cost exceeds new bound 
 
-                //leaf node in the search tree
                 global_threshold = current_node.f;             //update new bound
             }
 
         }else{
+
+        // -------------------------------------------
+        //if(current_node.f > 22) {
+        //    std::cout << "Nó com avaliação inconsistente foi expandido (f, g, h) = : "<< current_node.f << ", " << current_node.g << ", " << current_node.h << "\n";
+        //}
+        //-----------------------------------------------
+
+        //--------------------------------------------
+
             std::list<moves> path = idaStar(current_node, upper_bound);
             if(!path.empty()){
                 return path;
             }
         }
     }
+
     return std::list<moves>();
 }
 

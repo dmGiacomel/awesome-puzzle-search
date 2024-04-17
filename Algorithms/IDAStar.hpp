@@ -1,6 +1,8 @@
 #ifndef IDASTAR_HPP
 #define IDASTAR_HPP
 #include "SolvingAlgorithm.hpp"
+#include "../Heuristics/Heuristics.hpp"
+#include "../puzzle_n_minus_1.hpp"
 #include "SearchNode.hpp"
 #include "set"
 #include <limits.h>

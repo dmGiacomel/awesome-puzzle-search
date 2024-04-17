@@ -1,1 +1,6 @@
-g++ m_teste.cpp puzzle_n_minus_1.cpp Heuristics/Zero.cpp Heuristics/Heuristics.cpp Algorithms/SolvingAlgorithm.cpp Algorithms/AStar.cpp Algorithms/SearchNode.cpp Heuristics/Manhattan.cpp -o m_teste -O3
+g++ manhattan_test.cpp puzzle_n_minus_1.cpp Heuristics/Zero.cpp Heuristics/Heuristics.cpp Algorithms/SolvingAlgorithm.cpp Algorithms/AStar.cpp Algorithms/SearchNode.cpp Heuristics/Manhattan.cpp -o m_teste -O3
+
+
+
+
+g++ ida_teste.cpp puzzle_n_minus_1.cpp Heuristics/Zero.cpp Heuristics/Heuristics.cpp Algorithms/SolvingAlgorithm.cpp Algorithms/AStar.cpp Algorithms/SearchNode.cpp Heuristics/Manhattan.cpp Algorithms/IDAStar.cpp -o m_teste -O3
