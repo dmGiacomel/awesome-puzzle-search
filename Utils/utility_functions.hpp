@@ -1,6 +1,6 @@
 #ifndef UTILITY_FUNCTIONS_HPP
 #define UTILITY_FUNCTIONS_HPP
-#include "puzzle_n_minus_1.hpp"
+#include "../puzzle_n_minus_1.hpp"
 #include <list>
 
 namespace MovementsHandler{
@@ -15,10 +15,9 @@ namespace MovementsHandler{
 
     std::list<std::string> getOppositeNames(std::list<moves> moves_list);
 
-
 }
 
 namespace RankingFunctions{
-    
+
 }
 #endif
