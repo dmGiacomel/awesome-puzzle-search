@@ -2,8 +2,14 @@
 #include <vector>
 #include <string>
 
-int fact (unsigned n){
+unsigned long long fact (unsigned long long n){
     return (n == 0 || n == 1) ? 1 : n * fact(n - 1);
+}
+
+//could be done in a simpler way, it's done this way so as to avoid overflow as much as possible
+unsigned long long arrange (unsigned long long n, unsigned long long p){
+
+    return fact(n)/fact(n - p);
 }
 
 size_t rank (size_t perm_size, std::vector<unsigned char>& perm, std::vector<unsigned char>& inv){
@@ -16,15 +22,37 @@ size_t rank (size_t perm_size, std::vector<unsigned char>& perm, std::vector<uns
 
     std::swap(perm[current_index], perm[inv[current_index]]);
     std::swap(inv[aux], inv[current_index]);
-    return (aux + perm_size * rank(--perm_size, perm, inv));
+    return (aux + perm_size * rank(perm_size - 1, perm, inv));
 }
+
+/*
+size_t rankArrangment(size_t n_positions, std::vector<unsigned char>& perm, std::vector<unsigned char>& inv){
+
+}*/
 
 void unrank (size_t perm_size, size_t rank, std::vector<unsigned char>& id){
 
     if (perm_size > 0){
         std::swap(id[perm_size - 1], id[rank % perm_size]);
-        unrank(--perm_size, rank/perm_size, id);
+        unrank(perm_size - 1, rank/perm_size, id);
     }
+}
+
+void unrankArrangement (size_t n, size_t p, size_t rank, std::vector<unsigned char>& id){
+    if (n > 0 && p > 0){
+        std::swap(id[n - 1], id[rank % n]);
+        unrankArrangement(n - 1, p - 1, rank/n, id);
+    }
+}
+
+std::vector<unsigned char> unrankArrangement (size_t n, size_t p, size_t rank){
+    std::vector<unsigned char> id(n);
+    for (size_t i = 0; i < n; i++){
+        id[i] = i;
+    }
+    
+    unrankArrangement(n, p, rank, id);
+    return std::vector<unsigned char>(id.begin() + (n-p), id.end());
 }
 
 
@@ -49,9 +77,28 @@ void printVector (std::vector<unsigned char> v){
 
 int main(int argc, char **argv){
 
-    size_t r = std::atoi(argv[1]);
+    //size_t r = std::atoi(argv[1]);
+
+    size_t n = std::atoi(argv[1]);
+    size_t p = std::atoi(argv[2]);
+
+    //actual permutation
     std::vector<unsigned char> id({0, 1, 2, 3});
 
+    //vector that labels the pdb tiles (in the overall permutation, where are those tiles?)
+    //dual for the pdb of {2, 3}
+    std::vector<unsigned char> pdb_sim({2, 3});
+    
+    //testar arrange unranking (should generate every possible permutation of p elements choosen in n elements)
+    size_t n_perm = arrange(n,p);
+    for(size_t rank = 0; rank < n_perm; rank++){
+        std::cout << "rank " << rank << ": ";
+        printVector(unrankArrangement(n, p, rank));
+        std::cout << "\n";
+    }
+
+
+    /*
     std::cout << "rank: " << r << "\n";
     unrank(id.size(), r, id);
 
@@ -60,5 +107,6 @@ int main(int argc, char **argv){
 
     std::vector<unsigned char> dual = getDual(id);
     std::cout << "ranking the permutation (should be the same initial value): " << rank(id.size(), id, dual) << "\n";
+    */
     return 0;
 }

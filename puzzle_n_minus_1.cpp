@@ -10,6 +10,7 @@
 Puzzle::Puzzle(unsigned char rows, unsigned char columns)
     :board(rows, columns)
 {
+
     unsigned char tile_fill{0};
     
     for(unsigned char i = 0; i < rows; i++)
