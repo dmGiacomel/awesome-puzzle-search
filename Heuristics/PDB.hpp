@@ -5,6 +5,7 @@
 #include <queue>
 #include <set>
 #include <tuple>
+#include <list>
 #include <vector>
 
 class PDB : public Heuristics{
@@ -18,11 +19,16 @@ public:
 
     virtual ~PDB();
 
+    virtual bool build (const Puzzle& initial_state, const Puzzle& goal_state);
+
 private:
 
     void shapePatternArray();
     void fillPatternArray();
+
+    std::set<Puzzle> expand(const Puzzle& p);
     std::vector<unsigned char> getTileLocations(const Puzzle& p);
+    unsigned char* tableLocation(const Puzzle& p);
 
     int rows;
     int columns;

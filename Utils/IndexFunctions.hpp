@@ -22,6 +22,11 @@ namespace IndexingFunctions{
 
     std::vector<unsigned char> getDual (std::vector<unsigned char> perm);
 
+    template <typename T, typename Compare>
+    std::vector<std::size_t> sortPermutation(const std::vector<T>& vec, Compare& compare);
+
+    template <typename T>
+    std::vector<T> applyPermutation(const std::vector<T>& vec, const std::vector<std::size_t>& p);
 }   
 
 #endif

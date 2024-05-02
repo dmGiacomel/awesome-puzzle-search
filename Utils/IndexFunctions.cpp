@@ -84,12 +84,13 @@ size_t raw_rank (size_t perm_size, std::vector<unsigned char>& perm, std::vector
     return (aux + perm_size * raw_rank(perm_size - 1, perm, inv));
 }
 
+
 size_t IndexingFunctions::rank(const std::vector<unsigned char>& perm){
 
     std::vector<unsigned char> perm_copy(perm);
     std::vector<unsigned char> inv = getDual(perm);
 
-    return raw_rank(size(perm), perm_copy, inv);
+    return raw_rank(perm.size(), perm_copy, inv);
 }
 
 void unrank_raw (size_t perm_size, size_t rank, std::vector<unsigned char>& id){
@@ -126,4 +127,31 @@ std::vector<unsigned char> IndexingFunctions::unrank(size_t rank, size_t perm_si
     
 //     return inversion_vector;
 // }
+
+
+
+// due to https://stackoverflow.com/users/1828879/timothy-shields-----------------------------------------------------------------------
+// https://stackoverflow.com/questions/17074324/how-can-i-sort-two-vectors-in-the-same-way-with-criteria-that-uses-only-one-of
+template <typename T, typename Compare>
+std::vector<std::size_t> IndexingFunctions::sortPermutation(
+    const std::vector<T>& vec,
+    Compare& compare)
+{
+    std::vector<std::size_t> p(vec.size());
+    std::iota(p.begin(), p.end(), 0);
+    std::sort(p.begin(), p.end(),
+        [&](std::size_t i, std::size_t j){ return compare(vec[i], vec[j]); });
+    return std::move(p);
+}
+
+template <typename T>
+std::vector<T> IndexingFunctions::applyPermutation(
+    const std::vector<T>& vec,
+    const std::vector<std::size_t>& p)
+{
+    std::vector<T> sorted_vec(vec.size());
+    std::transform(p.begin(), p.end(), sorted_vec.begin(),
+        [&](std::size_t i){ return vec[i]; });
+    return std::move(sorted_vec);
+}
 #endif

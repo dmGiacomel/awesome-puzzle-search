@@ -92,7 +92,6 @@ int main(){
     
     for(int i = 0; i < random_moves; i++)
         p.makeMove(moves(rand() % 4));
-    
 
     std::cout << "Initial State: \n";
     p.printBoard();
