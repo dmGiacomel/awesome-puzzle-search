@@ -7,6 +7,7 @@
 #include <tuple>
 #include <list>
 #include <vector>
+#include "../puzzle_n_minus_1.hpp"
 
 class PDB : public Heuristics{
 public:
@@ -26,9 +27,11 @@ private:
     void shapePatternArray();
     void fillPatternArray();
 
-    std::set<Puzzle> expand(const Puzzle& p);
-    std::vector<unsigned char> getTileLocations(const Puzzle& p);
+    std::vector<size_t> getTileLocations(const Puzzle& p);
     unsigned char* tableLocation(const Puzzle& p);
+
+    std::list<Puzzle> expand(const Puzzle& p);
+    size_t verify();
 
     int rows;
     int columns;

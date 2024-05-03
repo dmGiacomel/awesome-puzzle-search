@@ -4,15 +4,17 @@
 #include <cstdint>
 #include <gmpxx.h>
 
+const size_t binomial_coef_max_height = 1000;
+
 namespace IndexingFunctions{
 
-    std::size_t rank(const std::vector<unsigned char>& permutation);
+    std::size_t rank(const std::vector<size_t>& permutation);
 
     std::vector<unsigned char> unrank(std::size_t rank, std::size_t perm_size);
 
     std::vector<unsigned char> getInversion(std::vector<unsigned char> permutation);
 
-    size_t toCombinadicBase(std::vector<unsigned char> combination);
+    size_t toCombinadicBase(const std::vector<size_t>& combination);
 
     std::vector<unsigned char> combinationFromRank(size_t rank, size_t k);
 
@@ -22,11 +24,13 @@ namespace IndexingFunctions{
 
     std::vector<unsigned char> getDual (std::vector<unsigned char> perm);
 
-    template <typename T, typename Compare>
-    std::vector<std::size_t> sortPermutation(const std::vector<T>& vec, Compare& compare);
+    std::vector<size_t> getDual (std::vector<size_t> perm);
 
-    template <typename T>
-    std::vector<T> applyPermutation(const std::vector<T>& vec, const std::vector<std::size_t>& p);
+    std::vector<std::size_t> sortPermutation(const std::vector<size_t>& vec);
+
+    std::vector<std::size_t> applyPermutation(const std::vector<size_t>& vec, const std::vector<std::size_t>& p);
+
+    void build_binomial_coef_table();
 }   
 
 #endif

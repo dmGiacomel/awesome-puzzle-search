@@ -17,16 +17,20 @@ size_t IndexingFunctions::factorial(size_t n) {
 //só deus sabe como isso funciona, mas isso funciona 
 //https://computationalcombinatorics.wordpress.com/2012/09/10/ranking-and-unranking-of-combinations-and-permutations/
 
-size_t IndexingFunctions::toCombinadicBase(std::vector<unsigned char> permutation){
+size_t IndexingFunctions::toCombinadicBase(const std::vector<size_t>& permutation){
     size_t result = 0;
     size_t k = permutation.size();
     
     for (size_t i = 0; i < k; i++){
+        //std::cout << "summing this combination:\t" << permutation[i] << "\t" << i + 1;
+        //std::cout << "combination result:\t" << binomialCoef(permutation[i], i + 1) << "\n";
         result += binomialCoef(permutation[i], i + 1);
+        //std::cout << "\n";
     }
 
     return result;
 }
+
 
 //só deus sabe como isso funciona, mas isso funciona 
 //https://computationalcombinatorics.wordpress.com/2012/09/10/ranking-and-unranking-of-combinations-and-permutations/
@@ -46,18 +50,60 @@ std::vector<unsigned char> IndexingFunctions::combinationFromRank(size_t m, size
         m -= binomialCoef(l - 1, i + 1);
         i--;
     }
-
+    //std::cout << "terminei antes do segfault!\n";
     return s;
 }
 
-size_t IndexingFunctions::binomialCoef(size_t n, size_t k){
-    size_t p = std::min(k, n - k);
-    size_t res = 1;
-    for (size_t i = 0; i < p; i++){
-        res *= (n - i);
-        res /= i + 1;
+static std::vector<std::vector<size_t>> binomial_coef_table;
+static bool is_bin_coef_table_calculated = false;
+
+void IndexingFunctions::build_binomial_coef_table(){
+    
+    binomial_coef_table = std::vector<std::vector<size_t>>(binomial_coef_max_height);
+    for (size_t i = 0; i < binomial_coef_max_height; i++){
+        binomial_coef_table[i] = std::vector<size_t>(i + 1);
     }
-    return res;
+
+    for (size_t i = 0; i < binomial_coef_max_height; i++){
+        binomial_coef_table[i][0] = 1;
+        binomial_coef_table[i][binomial_coef_table[i].size() - 1] = 1;
+    }
+    
+    // pascal's triangle level
+    for (size_t i = 2; i < binomial_coef_max_height; i++){
+        
+        // iterator inside the list
+        size_t rightmost_limit = binomial_coef_table[i].size() - 1;
+        for(size_t j = 1; j < rightmost_limit; j++){
+            binomial_coef_table[i][j] = binomial_coef_table[i - 1][j - 1] + binomial_coef_table[i - 1][j];
+        }
+    }
+    
+}
+
+size_t IndexingFunctions::binomialCoef(size_t n, size_t k){
+
+    //std::cout << "combination i'm trying to calculate:\t" << n << "\t" << k << std::endl << "\n";
+    if (k < 0 || k > n) {
+        return 0;
+    }
+    if (k == 0 || k == n) {
+        return 1;
+    }
+    if(is_bin_coef_table_calculated){
+        return binomial_coef_table[n][k];
+    }else{
+        build_binomial_coef_table();
+        is_bin_coef_table_calculated = true;
+        return binomial_coef_table[n][k];
+    }
+    // size_t p = std::min(k, n - k);
+    // size_t res = 1;
+    // for (size_t i = 0; i < p; i++){
+    //     res *= (n - i);
+    //     res /= i + 1;
+    // }
+    //return res;
 }
 
 std::vector<unsigned char> IndexingFunctions::getDual (std::vector<unsigned char> perm){
@@ -71,13 +117,25 @@ std::vector<unsigned char> IndexingFunctions::getDual (std::vector<unsigned char
     return std::move(dual);
 }
 
-size_t raw_rank (size_t perm_size, std::vector<unsigned char>& perm, std::vector<unsigned char>& inv){
+
+std::vector<size_t> IndexingFunctions::getDual (std::vector<size_t> perm){
+    size_t perm_size = perm.size();
+    std::vector<size_t> dual(perm_size);
+
+    for (size_t i = 0; i < perm_size; i++){
+        dual[perm[i]] = i;
+    }
+
+    return std::move(dual);
+}
+
+size_t raw_rank (size_t perm_size, std::vector<size_t>& perm, std::vector<size_t>& inv){
 
     if (perm_size == 1){
         return 0;
     }
     size_t current_index = perm_size - 1;
-    unsigned char aux = perm[current_index];
+    size_t aux = perm[current_index];
 
     std::swap(perm[current_index], perm[inv[current_index]]);
     std::swap(inv[aux], inv[current_index]);
@@ -85,10 +143,10 @@ size_t raw_rank (size_t perm_size, std::vector<unsigned char>& perm, std::vector
 }
 
 
-size_t IndexingFunctions::rank(const std::vector<unsigned char>& perm){
+size_t IndexingFunctions::rank(const std::vector<size_t>& perm){
 
-    std::vector<unsigned char> perm_copy(perm);
-    std::vector<unsigned char> inv = getDual(perm);
+    std::vector<size_t> perm_copy(perm);
+    std::vector<size_t> inv = getDual(perm);
 
     return raw_rank(perm.size(), perm_copy, inv);
 }
@@ -129,29 +187,23 @@ std::vector<unsigned char> IndexingFunctions::unrank(size_t rank, size_t perm_si
 // }
 
 
-
 // due to https://stackoverflow.com/users/1828879/timothy-shields-----------------------------------------------------------------------
 // https://stackoverflow.com/questions/17074324/how-can-i-sort-two-vectors-in-the-same-way-with-criteria-that-uses-only-one-of
-template <typename T, typename Compare>
-std::vector<std::size_t> IndexingFunctions::sortPermutation(
-    const std::vector<T>& vec,
-    Compare& compare)
-{
+
+std::vector<std::size_t> IndexingFunctions::sortPermutation(const std::vector<size_t>& vec){
     std::vector<std::size_t> p(vec.size());
     std::iota(p.begin(), p.end(), 0);
     std::sort(p.begin(), p.end(),
-        [&](std::size_t i, std::size_t j){ return compare(vec[i], vec[j]); });
+        [&](std::size_t i, std::size_t j){ return vec[i] < vec[j]; });
     return std::move(p);
 }
 
-template <typename T>
-std::vector<T> IndexingFunctions::applyPermutation(
-    const std::vector<T>& vec,
-    const std::vector<std::size_t>& p)
+std::vector<size_t> IndexingFunctions::applyPermutation(const std::vector<size_t>& vec, const std::vector<std::size_t>& p)
 {
-    std::vector<T> sorted_vec(vec.size());
-    std::transform(p.begin(), p.end(), sorted_vec.begin(),
-        [&](std::size_t i){ return vec[i]; });
+    std::vector<size_t> sorted_vec(vec.size());
+    for (std::size_t i = 0; i < vec.size(); ++i) {
+        sorted_vec[i] = vec[p[i]];
+    }
     return std::move(sorted_vec);
 }
 #endif

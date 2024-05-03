@@ -175,9 +175,9 @@ Matrix<datatype>::Matrix(int rows, int columns)
     std::cout << " começo matriz construida por linha e coluna\n";
     #endif
     this->matrix = allocateMatrix(rows, columns);
-    for (int i = 0; i < rows; i++)
-        for(int j = 0; j < columns; j++)
-            this->matrix[i][j] = datatype(0);
+    //for (int i = 0; i < rows; i++)
+    //    for(int j = 0; j < columns; j++)
+    //        this->matrix[i][j] = datatype(0);
     
     //std::cout << "Matrix Created!\n";
     #ifdef DEBUGGIN_MODE

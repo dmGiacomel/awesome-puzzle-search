@@ -2,7 +2,7 @@
 #include <iostream>
 #include <vector>
 
-void printVector(std::vector<unsigned char>& v){
+void printVector(const std::vector<unsigned char>& v){
 
     for (auto i : v){
         std::cout << "\t" << +i;
@@ -11,18 +11,16 @@ void printVector(std::vector<unsigned char>& v){
 }
 
 int main(){
-    std::vector<unsigned char> perm = {0, 1, 2};
-    std::cout << IndexingFunctions::toCombinadicBase(perm) << "\n";
-    size_t k = 7;
-    size_t n_combs = IndexingFunctions::binomialCoef(16, k);
 
-    for (size_t i = 0; i < n_combs; i++){
-        std::vector<unsigned char> combination = IndexingFunctions::combinationFromRank(i, k);
-        //std::cout << "Combination of rank " << i << ":";
-        printVector(combination);
-        //std::cout << "rank from this vector: " << IndexingFunctions::toCombinadicBase(combination) << std::endl; 
-    }
-    
+    std::cout << IndexingFunctions::toCombinadicBase(std::vector<size_t> ({0, 1, 2, 8, 9, 10, 11})) << "\n";
+    std::cout << IndexingFunctions::toCombinadicBase(std::vector<size_t> ({0, 1, 2, 3, 4, 5, 6})) << "\n";
+    //std::cout << IndexingFunctions::toCombinadicBase(std::vector<size_t> ({11, 10, 9, 8, 7, 6, 5})) << "\n";
+    //std::cout << IndexingFunctions::toCombinadicBase(std::vector<size_t> ({5, 6, 7, 8, 9, 10, 11})) << "\n";
+    //std::cout << IndexingFunctions::toCombinadicBase(std::vector<size_t> ({0 ,1 ,2 ,3 ,4 ,5 ,6 })) << "\n";
+
+    //printVector(IndexingFunctions::combinationFromRank(791, 7));
+
+    //printVector(IndexingFunctions::combinationFromRank(0, 7));
 
     return 0;
 }
