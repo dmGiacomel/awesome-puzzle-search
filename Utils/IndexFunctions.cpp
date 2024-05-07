@@ -106,7 +106,7 @@ size_t IndexingFunctions::binomialCoef(size_t n, size_t k){
     //return res;
 }
 
-std::vector<unsigned char> IndexingFunctions::getDual (std::vector<unsigned char> perm){
+std::vector<unsigned char> IndexingFunctions::getDual (const std::vector<unsigned char>& perm){
     size_t perm_size = perm.size();
     std::vector<unsigned char> dual(perm_size);
 
@@ -118,7 +118,7 @@ std::vector<unsigned char> IndexingFunctions::getDual (std::vector<unsigned char
 }
 
 
-std::vector<size_t> IndexingFunctions::getDual (std::vector<size_t> perm){
+std::vector<size_t> IndexingFunctions::getDual (const std::vector<size_t>& perm){
     size_t perm_size = perm.size();
     std::vector<size_t> dual(perm_size);
 

@@ -5,8 +5,6 @@
 
 #define DEBUGGIN_MODE___DONE___
 
-
-
 template <typename datatype>
 class Matrix{
 private:
@@ -136,6 +134,7 @@ Matrix<datatype>::Matrix(const Matrix& other)
 template <typename datatype>
 Matrix<datatype>::Matrix(Matrix&& other) noexcept 
     :rows(other.rows), columns(other.columns), matrix(other.matrix){
+    
     other.matrix = nullptr;
     other.rows = 0;
     other.columns = 0;

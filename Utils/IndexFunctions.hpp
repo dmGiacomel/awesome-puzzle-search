@@ -22,9 +22,9 @@ namespace IndexingFunctions{
 
     size_t factorial(size_t n); 
 
-    std::vector<unsigned char> getDual (std::vector<unsigned char> perm);
+    std::vector<unsigned char> getDual (const std::vector<unsigned char>& perm);
 
-    std::vector<size_t> getDual (std::vector<size_t> perm);
+    std::vector<size_t> getDual (const std::vector<size_t>& perm);
 
     std::vector<std::size_t> sortPermutation(const std::vector<size_t>& vec);
 

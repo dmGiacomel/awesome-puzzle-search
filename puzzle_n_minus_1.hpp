@@ -35,11 +35,13 @@ public:
     bool isSolved() const;
     bool makeMove(moves move);
     unsigned char getTileAt(unsigned char row, unsigned char column) const;
+    std::tuple<unsigned char, unsigned char> getPositionOfEmpty() const;
     void printBoard() const;
     const Matrix<unsigned char>& getBoard() const;
     std::set<moves> availableMoves() const;
 
     std::vector<unsigned char> getPuzzleAsString () const;
+    std::vector<char> getPuzzleAsSignedString () const;
     bool operator== (const Puzzle& other) const;
 private:
     

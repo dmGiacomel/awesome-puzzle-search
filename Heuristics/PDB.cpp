@@ -82,20 +82,20 @@ void PDB::fillPatternArray(){
     *tableLocation(p) = 0;
 
     std::queue<Puzzle> open;
-    open.emplace(p);
+    open.push(std::move(p));
 
     while (!open.empty()){
-        auto current = open.front();
+        Puzzle current = std::move(open.front());
         open.pop();
 
         //std::cout << "examining state: " << states++ << "with value: " << +*tableLocation(current) << "\n";
-
-        auto neighbours = expand(current);
-        for (auto i : neighbours){
+        //std::cout << "queue states: " << open.size()<< "\n";
+        std::list<Puzzle> neighbours = expand(current);
+        for (Puzzle &i : neighbours){
             auto current_table_position = tableLocation(i);
             if (*current_table_position == UCHAR_MAX){
                 *current_table_position = *tableLocation(current) + 1;
-                open.emplace(i);
+                open.push(std::move(i));
             }
         }
     }
@@ -108,7 +108,7 @@ std::list<Puzzle> PDB::expand(const Puzzle& p){
     for (auto i : available_moves){
         Puzzle temp = p;
         temp.makeMove(i);
-        neighbours.push_back(temp);
+        neighbours.push_back(std::move(temp));
     }
     return std::move(neighbours);
 }

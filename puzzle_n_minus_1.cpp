@@ -47,7 +47,6 @@ Puzzle& Puzzle::operator=(const Puzzle& other){
 Puzzle::Puzzle(Puzzle&& other) noexcept
     :board(std::move(other.board)), position_of_empty(std::move(other.position_of_empty))
 {
-
    // std::cout << "Puzzle moved!\n";
 }
 
@@ -243,9 +242,19 @@ bool Puzzle::isSolved() const{
 }
 
 std::vector<unsigned char> Puzzle::getPuzzleAsString () const{
-
     auto buffer = board.getRawPointer();
-    return std::vector<unsigned char>(buffer[0], buffer[0] + board.getRows() * board.getColumns());
+    std::vector <unsigned char> string(buffer[0], buffer[0] + board.getRows() * board.getColumns()); 
+    return std::move(string);
+}
+
+std::vector<char> Puzzle::getPuzzleAsSignedString () const{
+    char** buffer = (char**)board.getRawPointer();
+    std::vector <char> string(buffer[0], buffer[0] + board.getRows() * board.getColumns()); 
+    return std::move(string);
+}
+
+std::tuple<unsigned char, unsigned char> Puzzle::getPositionOfEmpty() const{
+    return position_of_empty;
 }
 
 #endif

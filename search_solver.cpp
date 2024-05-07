@@ -4,13 +4,14 @@
 #include "Utils/IndexFunctions.hpp"
 
 #include "Heuristics/PDB.hpp"
+#include "Heuristics/APDB.hpp"
+#include "Heuristics/APDBSet.hpp"
 #include "Heuristics/Manhattan.hpp"
 #include "Heuristics/MisplacedTileCount.hpp"
 #include "Heuristics/Zero.hpp"
 
 #include "Algorithms/AStar.hpp"
 #include "Algorithms/IDAStar.hpp"
-
 
 int main (int argc, char **argv){
 
@@ -24,8 +25,8 @@ int main (int argc, char **argv){
     for(int i = 0; i < random_moves; i++)
         initial_state.makeMove(moves(rand() % 4));
 
-    PDB *pdb = new PDB();
-    pdb->build(initial_state, goal_state, {11, 10, 9, 15, 14, 13, 12});
+    APDBSet *pdb = new APDBSet();
+    pdb->build(initial_state, goal_state, {{15, 14, 13, 12, 7, 11}, {8, 4}, {10, 9}, {6, 5}, {3, 2, 1}});
 
     //Manhattan *pdb = new Manhattan();
     std::cout << "Initial State: \n";
