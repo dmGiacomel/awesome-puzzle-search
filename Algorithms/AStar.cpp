@@ -39,8 +39,20 @@ std::list<moves> AStar::solve(const Puzzle& initial_state,
         open.pop();
 
     closed.clear();
+
+    nodes_expanded = 0; 
+    summed_heuristics = 0;
+
+    auto start = std::chrono::high_resolution_clock::now();
+
     std::list<moves> path = driverProcedure();
 
+    auto end = std::chrono::high_resolution_clock::now();
+
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+    std::cout << duration.count() << " " << std::endl;
+    std::cout << nodes_expanded << " " << std::endl;
+    std::cout << double(summed_heuristics)/nodes_expanded << std::endl;
     return path;
 }
 
@@ -56,7 +68,6 @@ std::list<moves> AStar::driverProcedure(){
     #ifdef DEBUGGING_MODE_ASTAR
         unsigned long long int iteration(0);
     #endif
-
 
     while(!open.empty()){
         #ifdef DEBUGGING_MODE_ASTAR
@@ -152,6 +163,10 @@ std::set<SearchNode> AStar::generateSuccessors(const SearchNode& node){
         std::cout << "end of generate successors\n"; 
     #endif
     
+    nodes_expanded += successors.size();
+    for(auto &i : successors){
+        summed_heuristics += i.h;
+    }
     return successors;
 }
 

@@ -6,6 +6,7 @@
 #include "SearchNode.hpp"
 #include "set"
 #include <limits.h>
+#include <chrono>
 
 class IDAStar : public SolvingAlgorithm{
 public: 
@@ -23,6 +24,9 @@ private:
     Puzzle initial_state;
     Puzzle goal_state;
     int global_threshold;
+
+    size_t nodes_expanded;
+    size_t summed_heuristics;
 
     std::list<moves> makeMovesList(const SearchNode& goal_state);
     std::list<moves> driverProcedure();

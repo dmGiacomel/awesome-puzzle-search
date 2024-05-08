@@ -14,6 +14,9 @@ public:
     //Really Default Constructor
     Puzzle();
 
+    //constructor based on char vector
+    Puzzle(const std::vector<unsigned char>& tiles, int rows, int columns);
+
     //Default Constructor
     Puzzle(unsigned char rows, unsigned char columns);
 

@@ -16,6 +16,20 @@ std::list<moves> IDAStar::solve(const Puzzle& initial_state,
     this->goal_state = goal_state;
     global_threshold = 0;
 
+
+    nodes_expanded = 0; 
+    summed_heuristics = 0;
+
+    auto start = std::chrono::high_resolution_clock::now();
+
+    std::list<moves> path = driverProcedure();
+
+    auto end = std::chrono::high_resolution_clock::now();
+
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+    std::cout << duration.count() << " " << std::endl;
+    std::cout << nodes_expanded << " " << std::endl;
+    std::cout << double(summed_heuristics)/nodes_expanded << std::endl;
     std::list<moves> path = driverProcedure();
     return path;
 }
@@ -36,10 +50,10 @@ std::list<moves> IDAStar::driverProcedure(){
     std::list<moves> best_path;                                         //initializing solution path
     double initial_g = 0;
     double initial_h = heuristics->evaluate(initial_state);
-        std::cout << "IDA running...\n ";
+        //std::cout << "IDA running...\n ";
 
     while (best_path.empty() && global_threshold != INT_MAX){
-        std::cout << "Current global threshold: " << global_threshold << "\n";
+        //std::cout << "Current global threshold: " << global_threshold << "\n";
         int local_threshold = global_threshold;
         global_threshold = INT_MAX;
 
@@ -53,11 +67,11 @@ std::list<moves> IDAStar::driverProcedure(){
 std::list<moves> IDAStar::idaStar(const SearchNode& current, int upper_bound){
 
     if (current.state.isSolved()){
-        std::cout << "f-value da solucao: " << current.f << "\n";
-        std::cout << "g-value da solucao: " << current.g << "\n";
-        std::cout << "h-value da solucao: " << current.h << "\n";
+        //std::cout << "f-value da solucao: " << current.f << "\n";
+        //std::cout << "g-value da solucao: " << current.g << "\n";
+        //std::cout << "h-value da solucao: " << current.h << "\n";
 
-        std::cout << "found!\n";
+        //std::cout << "found!\n";
         return makeMovesList(current);
     }
 

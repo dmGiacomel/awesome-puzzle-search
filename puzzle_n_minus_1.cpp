@@ -23,6 +23,19 @@ Puzzle::Puzzle(unsigned char rows, unsigned char columns)
     
 }
 
+Puzzle::Puzzle(const std::vector<unsigned char>& tiles, int rows, int columns)
+    :board(rows,columns)
+{
+    size_t aux = 0;
+    for (int i = 0; i < rows; i++){
+        for(int j = 0; j < columns; j++){
+            if(tiles[aux] == 0)
+                position_of_empty = std::make_tuple(i,j);
+            board.setValueAt(i, j , tiles[aux++]);
+        }
+    }
+}
+
 //copy constructor
 Puzzle::Puzzle(const Puzzle& other)
     :board(other.board), position_of_empty(other.position_of_empty)

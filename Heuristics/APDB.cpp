@@ -93,153 +93,75 @@ struct hashPuzzle{
     }
 };
 
-/*
-//---------------------------------------------------------------------------------------
-void APDB::fillPatternArray(){
-    //initial state (goal state for the search method)
-    std::priority_queue<std::tuple<Puzzle, unsigned char>, std::vector<std::tuple<Puzzle, unsigned char>>, CustomCompareTuple> open;
 
+void APDB::fillPatternArray(){
+
+    //tuple is <state, associated cost>    
+    std::priority_queue<std::tuple<Puzzle, unsigned char>, std::vector<std::tuple<Puzzle, unsigned char>>, CustomCompareTuple> open;
+    //std::queue<std::tuple<Puzzle, unsigned char>> open;
     Puzzle initial_state(rows, columns);
     *tableLocation(initial_state) = 0;
     open.push(std::make_tuple(initial_state, 0));
 
-    auto hash_puzzle = [&](const Puzzle& p){
-        auto zero_position = p.getPositionOfEmpty();
-        std::hash<size_t> hasher;
-        size_t seed = 0;
-        seed ^= hasher(std::get<0>(zero_position)) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-        seed ^= hasher(std::get<1>(zero_position)) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-        seed ^= hasher(size_t(tableLocation(p))) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-
-        return seed;
-    };
-
-    auto puzzle_equals = [&](const Puzzle& p1, const Puzzle& p2){
-        if(p1.getPositionOfEmpty() == p2.getPositionOfEmpty() && tableLocation(p1) == tableLocation(p2)){
-            return true;
-        } 
-        return false;
-    };
-
-    std::unordered_set<Puzzle, decltype(hash_puzzle), decltype(puzzle_equals)> closed(100, hash_puzzle, puzzle_equals);
-
-    size_t iteracao = 0;
-
+    size_t iteracao = 0; 
     while (!open.empty()){
         
-        //std::cout << "Iteração atual: " << iteracao++ << " -----------------------------------";
-        //std::cout << "Open size: " << open.size() << "\n";
-        //std::cout << "Closed size: " << closed.size() << "\n\n";
-        //initial_state();
-        auto current = open.top();
+        auto current = std::move(open.top());
         open.pop();
         Puzzle& current_puzzle_state = std::get<0>(current);
         const unsigned char current_state_value = std::get<1>(current);
-
+        std::cout << "current state value : " << +current_state_value << "\n";
         auto current_index = tableLocation(current_puzzle_state);
-        std::list<Puzzle> neighbours = expand(current_puzzle_state);
-
-        //std::cout << "Current Index:\t" << size_t(current_index) << "\twith value:" << std::dec << +current_state_value << std::endl;
-        //std::cout << "Puzzle State: \n";
-        //current_puzzle_state.printBoard();
-        //std::cout << std::endl;
-    
-        closed.insert(std::move(current_puzzle_state));
-
-        for (Puzzle &i : neighbours){
-            auto neighbour_index = tableLocation(i);
-
-            //std::cout << "Neighbour Index:" << size_t(neighbour_index) << "\twith value:" << std::dec << +*neighbour_index << "\n";
-            //std::cout << "Neighbour Puzzle State: \n";
-            //i.printBoard();
-            // se nao mudou, os valores devem ser mantidos os mesmos , tanto na fila quanto no apdb
-            // se mudou, verifica se o estado já era inicializado. se não era, incrementa o valor no pd e enfileira com esse valor incrementado
-            
-            //  if not in closed
-            if (closed.find(i) == closed.end()){
-                //std::cout << "entrei aqui !!0\n";
-
-                // if the apdb state did not change, values should be kept the same at both the pqueue and the apdb array
-                if (current_index == neighbour_index){
-                    //std::cout << "entrei aqui 1 \n";
-                    open.push(std::make_tuple(std::move(i), current_state_value));
-
-                }else{            //if it did change state, verify if the state was initialized. if not, increments value at pdb and enqueue the state with the incremented value
-                    if (*neighbour_index == UCHAR_MAX){
-                        //std::cout << "entrei aqui 2 \n";
-                        *neighbour_index = current_state_value + 1;
-                        open.push(std::make_tuple(std::move(i), current_state_value + 1));
-                    }else{
-                        if (current_state_value <= *neighbour_index){
-                            *neighbour_index = current_state_value + 1;
-                            open.push(std::make_tuple(std::move(i), current_state_value + 1));
-                        }else{
-                            open.push(std::make_tuple(std::move(i), current_state_value));
-                        }
-                    }
-                }
-            }
-        }
-
-        //std::cout << "end of iteration!------------------------\n";
-        //std::cin.get();
-    }
-    
-    std::cout << "final size of closed: " << closed.size() << "\n";
-}
-
-*/
-
-void APDB::fillPatternArray(){
-
-    //tuple is <state, associated cost, idx(from where it came from)>    
-    std::priority_queue<std::tuple<Puzzle, unsigned char>, std::vector<std::tuple<Puzzle, unsigned char>>, CustomCompareTuple> open;
-
-    Puzzle initial_state(rows, columns);
-    *tableLocation(initial_state) = 0;
-    open.push(std::make_tuple(initial_state, 0));
-
-    while (!open.empty()){
         
-        //initial_state();
-        auto current = open.top();
-        open.pop();
-        Puzzle& current_puzzle_state = std::get<0>(current);
-        const unsigned char current_state_value = std::get<1>(current);
+        std::cout << "Iteração atual: " << iteracao++ << " -----------------------------------";
+        std::cout << "Open size: " << open.size() << "\n";
 
-        auto current_index = tableLocation(current_puzzle_state);
-        std::list<Puzzle> neighbours = expand(current_puzzle_state);
+        std::list<Puzzle> neighbours = transitiveHullOfZeroCostActions(current_puzzle_state);
     
         //closed.insert(std::move(current_puzzle_state));
         auto visited_indexes = pdbTableLocation(current_puzzle_state);
         pdb_bitmap[visited_indexes.first][visited_indexes.second] = true;
 
         for (Puzzle &i : neighbours){
-
+            
             auto neighbour_index = tableLocation(i);
 
-            //  if not in closed
             visited_indexes = pdbTableLocation(i);
             if (!pdb_bitmap[visited_indexes.first][visited_indexes.second]){
+
+                //if(current_state_value < *neighbour_index){
+                
+                //if(current_state_value + 1 <  *tableLocation(i))
+                    //*neighbour_index = current_state_value + 1;
+                    //pen.push(std::make_tuple(std::move(i), current_state_value + 1));
                 
                 //std::cout << "entrei aqui !!0\n";
                 //if it did change state, verify if new state has better cost than older state. if it is the case
-                if (!(current_index == neighbour_index)){           
-                    if (current_state_value <= *neighbour_index){
+                if (current_index != neighbour_index){     
+                    //novo estado eh nao inicializado
+                    if (*neighbour_index == UCHAR_MAX){
                         *neighbour_index = current_state_value + 1;
                         open.push(std::make_tuple(std::move(i), current_state_value + 1));
-                    }else{          // sanity check - if things are done properly it should never enter this branch
-                        std::cout << "strange things are happening here!...\n";
-                        open.push(std::make_tuple(std::move(i), current_state_value));
                     }
+                    
+                    // else{          // sanity check - if things are done properly it should never enter this branch
+                    //     if(current_state_value + 1 < *neighbour_index){
+                    //         *neighbour_index = current_state_value + 1;
+                    //         open.push(std::make_tuple(std::move(i), current_state_value + 1));
+                    //     }else{
+                    //         //open.push(std::make_tuple(std::move(i), current_state_value ));
+                    //     }
+                    // }
+                }else{
+                    //open.push(std::make_tuple(std::move(i), current_state_value ));
+
                 }
-
-                std::list<Puzzle> zero_cost_actions = transitiveHullOfZeroCostActions(current_puzzle_state);
-
+                
+                //}else{
+                //    open.push(std::make_tuple(std::move(i), current_state_value+1));
+                //}
             }
         }
-        //std::cout << "end of iteration!------------------------\n";
-        //std::cin.get();
     }
 }
 
@@ -271,7 +193,7 @@ std::list<Puzzle> APDB::transitiveHullOfZeroCostActions(const Puzzle& initial_st
     std::unordered_set<Puzzle, decltype(hash_puzzle), decltype(puzzle_equals)> local_closed(10, hash_puzzle, puzzle_equals);
 
     while(!open.empty()){
-        auto current = open.front();
+        Puzzle current = std::move(open.front());
         open.pop();
         local_closed.insert(current);
 
@@ -279,17 +201,22 @@ std::list<Puzzle> APDB::transitiveHullOfZeroCostActions(const Puzzle& initial_st
         for (auto &i: neighbours){
             
             // se ainda nao gerado
-            if (local_closed.find(i) != local_closed.end()){
+            if (local_closed.find(i) == local_closed.end()){
 
                 // se o apdb não mudou, deve-se inserir esse estado na fila da busca em largura
                 // senao, este cara faz parte do fecho e deve ser inserido no conjunto do fecho 
                 if (tableLocation(current) == tableLocation(i)){
                     open.push(std::move(i));
+                }else{
+                    transitive_hull.push_back(i);
+                    //adiciona em closed para evitar reexpansao
+                    local_closed.insert(i);
                 }
             }
         }
     }
 
+    return std::move(transitive_hull);
 }
 
 std::list<Puzzle> APDB::expand(const Puzzle& p){
@@ -306,7 +233,7 @@ std::list<Puzzle> APDB::expand(const Puzzle& p){
 
 void APDB::shapePatternArray(){
 
-    size_t tile_combinations  = IndexingFunctions::binomialCoef(rows * columns, pdb_tiles.size()); 
+    size_t tile_combinations = IndexingFunctions::binomialCoef(rows * columns, pdb_tiles.size()); 
     size_t tile_perms_per_combination = IndexingFunctions::factorial(pdb_tiles.size());
 
     //std::cout << "tile_combinations: " << tile_combinations << "\n";
@@ -321,13 +248,12 @@ void APDB::shapePatternArray(){
 size_t APDB::verify(){
     size_t slots_not_reached = 0;
     for (auto &i : pattern_values){
-        for (auto j : i){
+        for (auto &j : i){
             if(j == UCHAR_MAX){
-                slots_not_reached++;        
-            }
+                j = 0;
+            }  
         }
     }
-
     return slots_not_reached;
 }
 
@@ -362,6 +288,7 @@ bool APDB::build (const Puzzle& initial_state, const Puzzle& goal_state, const s
     std::cout << "filled!\n";
 
     std::cout << "Slots intocados: " << verify() << "\n";
+    std::cin.get();
 
     return true;
 }

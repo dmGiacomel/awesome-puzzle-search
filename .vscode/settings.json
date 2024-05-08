@@ -48,6 +48,8 @@
         "cinttypes": "cpp",
         "set": "cpp",
         "unordered_set": "cpp",
-        "cstring": "cpp"
+        "cstring": "cpp",
+        "bitset": "cpp",
+        "chrono": "cpp"
     }
 }

@@ -12,6 +12,7 @@
 #include <vector>
 #include "../puzzle_n_minus_1.hpp"
 #include <bitset>
+#include <chrono>
 
 class APDB : public Heuristics{
 public:
@@ -30,6 +31,7 @@ private:
 
     void shapePatternArray();
     void shapePdbPatternArray();
+    void shapePdbAcumulator();
     void fillPatternArray();
 
     std::vector<size_t> getTileLocations(const Puzzle& p);
@@ -37,6 +39,7 @@ private:
 
     std::pair<size_t, size_t> pdbTableLocation(const Puzzle& p);
     std::vector<size_t> getPdbTileLocations(const Puzzle& p);
+    
 
     std::list<Puzzle> expand(const Puzzle& p);
     std::list<Puzzle> transitiveHullOfZeroCostActions(const Puzzle& p);
@@ -46,6 +49,7 @@ private:
     int columns;
     
     std::vector<std::vector<bool>> pdb_bitmap;
+    std::vector<std::vector<std::vector<unsigned char>>> pdb_acumulator;
     std::vector<unsigned char> pdb_tiles;
     std::vector<std::vector<unsigned char>> pattern_values;
 

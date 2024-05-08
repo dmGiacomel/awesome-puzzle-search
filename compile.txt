@@ -5,3 +5,11 @@ g++ ida_teste.cpp puzzle_n_minus_1.cpp Heuristics/Zero.cpp Heuristics/Heuristics
 
 
 g++ -Ofast search_solver.cpp Algorithms/IDAStar.cpp Heuristics/Heuristics.cpp Heuristics/PDB.cpp Heuristics/Manhattan.cpp Heuristics/MisplacedTileCount.cpp Heuristics/Zero.cpp Algorithms/SearchNode.cpp Algorithms/AStar.cpp Utils/IndexFunctions.cpp Utils/MovementsHandler.cpp puzzle_n_minus_1.cpp Heuristics/APDB.cpp -o pdb_test.x
+
+
+
+
+g++ -Ofast search_solver.cpp Algorithms/IDAStar.cpp Heuristics/Heuristics.cpp Heuristics/PDB.cpp Heuristics/Manhattan.cpp Heuristics/MisplacedTileCount.cpp Heuristics/Zero.cpp Algorithms/SearchNode.cpp Algorithms/AStar.cpp Utils/IndexFunctions.cpp Utils/MovementsHandler.cpp puzzle_n_minus_1.cpp Heuristics/APDB.cpp Heuristics/APDBSet.cpp -o pdb_test.x
+
+
+g++ -Ofast 8_p.cpp Algorithms/IDAStar.cpp Heuristics/Heuristics.cpp Heuristics/PDB.cpp Heuristics/Manhattan.cpp Heuristics/MisplacedTileCount.cpp Heuristics/Zero.cpp Algorithms/SearchNode.cpp Algorithms/AStar.cpp Utils/IndexFunctions.cpp Utils/MovementsHandler.cpp puzzle_n_minus_1.cpp Heuristics/APDB.cpp Heuristics/APDBSet.cpp -o 

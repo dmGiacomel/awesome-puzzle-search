@@ -7,6 +7,7 @@
 #include <queue>
 #include <list>
 #include <set>
+#include <chrono>
 
 //ISSUE -> DEFAULT CONSTRUCTOR IS CODED IN A VERY DUMB MANNER
 
@@ -23,6 +24,10 @@ private:
     Heuristics* heuristics;
     Puzzle initial_state;
     Puzzle goal_state;
+    
+    size_t nodes_expanded;
+    size_t summed_heuristics;
+    
 
     //open and closed set - functor needed on priority queue to create min heap
     struct GreaterF{

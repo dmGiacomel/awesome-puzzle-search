@@ -26,8 +26,12 @@ int main (int argc, char **argv){
         initial_state.makeMove(moves(rand() % 4));
 
     APDBSet *pdb = new APDBSet();
-    pdb->build(initial_state, goal_state, {{15, 14, 13, 12, 7, 11}, {8, 4}, {10, 9}, {6, 5}, {3, 2, 1}});
-
+    initial_state = Puzzle({15, 7, 5, 4, 1, 11 ,12, 0, 10, 8, 9, 6, 14 ,3 ,13, 2}, 4, 4);
+    //PDB *pdb = new PDB();
+    //pdb->build(initial_state, goal_state, {{15, 14, 13, 12, 7}, {6, 5, 4}, {1, 2}, {8,9,10}, {3, 11 }});
+    pdb->build(initial_state, goal_state, {{1, 2, 3}, {4, 5, 9}, {6, 7, 10}, {8, 12, 13, 14, 15, 11}, {2, 3, 6, 7, 10}});
+    
+    //pdb->build(initial_state, goal_state, {15,14,13,12,11,7});
     //Manhattan *pdb = new Manhattan();
     std::cout << "Initial State: \n";
     initial_state.printBoard();
