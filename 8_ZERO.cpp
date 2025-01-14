@@ -13,7 +13,7 @@
 #include "Algorithms/AStar.hpp"
 #include "Algorithms/IDAStar.hpp"
 
-const size_t N_RANDOM_INSTANCES = 100000;
+const size_t N_RANDOM_INSTANCES = 50000;
 const int rows = 3;
 const int columns = 3;
 const int N_RANDOM_MOVES = 10000;
@@ -35,38 +35,36 @@ int main (int argc, char **argv){
 
     srand(seed_value);
 
-    PDB *pdb = new PDB();
-    pdb->build(initial_state, goal_state, {7, 6, 5, 4, 1});
+    Zero *pdb = new Zero();
+    //pdb->build(initial_state, goal_state, {8, 7, 6, 5, 2});
 
-    AStar *a = new AStar();
-    IDAStar *ida = new IDAStar();
     // saida em linha separado por espaços, uma linha para cada execucao
     // <iteracao> <runtime> <estados gerados> <heuristica media> <sol_size> 
     for (size_t i = 0; i < N_RANDOM_INSTANCES; i++){
-
+        AStar *a = new AStar();
         initial_state = getRandomPuzzleInstance();
         std::cout << i << " ";
         auto result = a->solve(initial_state, goal_state, pdb);
-        std::cout << result.size();
+        std::cout << " " << result.size();
         std::cout << std::endl;
-        std::cin.get();
+        delete a;
     }
 
     std::cout << "-" << std::endl;
     srand(seed_value);
 
     for (size_t i = 0; i < N_RANDOM_INSTANCES; i++){
+        IDAStar *ida = new IDAStar();
 
         initial_state = getRandomPuzzleInstance();
         std::cout << i << " ";
         auto result = ida->solve(initial_state, goal_state, pdb);
-        std::cout << result.size();
+        std::cout << " " << result.size();
         std::cout << std::endl;
-        std::cin.get();
+        //std::cin.get();
+        delete ida;
     }
 
-    delete pdb; 
-    delete ida;
-    delete a;
+    delete pdb;
     return 0;
 }

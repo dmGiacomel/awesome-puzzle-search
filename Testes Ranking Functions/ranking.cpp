@@ -38,6 +38,19 @@ void unrank (size_t perm_size, size_t rank, std::vector<unsigned char>& id){
     }
 }
 
+size_t rankArr(size_t n, size_t p, std::vector<unsigned char>& perm, std::vector<unsigned char>& inv){
+
+    return
+}
+
+//perm inv refers only to the pdb tiles
+size_t rankArrangement(size_t n, size_t p, std::vector<unsigned char>& perm_inv){
+
+    //arbitrar
+    std::vector<unsigned char> 
+    return rankArr(p, perm_inv);
+}
+
 void unrankArrangement (size_t n, size_t p, size_t rank, std::vector<unsigned char>& id){
     if (n > 0 && p > 0){
         std::swap(id[n - 1], id[rank % n]);

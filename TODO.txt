@@ -1,0 +1,44 @@
+Parte 1 - Resolver problemas do código ----------------------------
+
+
+    -> Refatorar geração de PDBS para poder gerar PDBS maiores. Problema atual é o consumo de memória da busca em largura claśsica como está implementada.
+
+        FAZER NESSA ORDEM:
+        -> revisar funções de índice e criar as funções de índice inversas pras permutações. dar uma olhada no artigo do edelkamp. testar isso e ter certeza de que funciona.
+        -> codar a classe de abstração de PDB. Já pensar das formas mais genéricas possíveis, pra reusar o código na abstração de APDB.
+        -> refazer a função de gerar efetivamente, como na proposta do edelkamp, mantendo um conjunto de índices para as próximas iterações para evitar custos quadráticos na busca em largura modificada.
+
+
+    -> Refatorar geração de APDBS. Tem tanto o mesmo problema que a geração de PDBS quanto o grande problema do trabalho que são as regiões do tile 0.
+
+    -> Reavaliar consistência das heurísticas e funcionamento do A* sem detecção de duplicatas para PDBS e APDBS. Refatorar se necessário para funcionar com PDBS e APDBS.
+
+
+
+
+
+
+
+
+
+
+Parte 2 - Preparando e executando etapa de testes -----------------------
+
+
+    -> Fazer os testes iniciais conforme descrito na metodologia. Descrever os resultados e as questões que envolvem uma implementação como esta, incluindo esta análise sobre detecção de duplicatas se necessário. Não precisamos, aqui, de valores numéricos, pode ser uma coisa mais descritiva sobre o processo de debugging.
+
+    -> Fazer os códigos da etapa de testes de desempenho conforme o que foi descrito na metodologia. 
+
+    -> Executar os códigos de teste e armazenar arquivos de saída. Talvez usar o computador do Bruno.
+
+
+
+Parte 3 - Scripts pra análise de dados ------------------------------------------------
+
+
+    -> Scripts para carregar e organizar arquivos de saída em dataframes do pandas.
+
+    -> Análise exploratória.
+
+    -> Estabelecer testes de hipótese. Ver se isso é possível também, considerando o tamanho do espaço de busca.
+

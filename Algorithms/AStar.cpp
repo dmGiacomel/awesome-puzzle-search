@@ -37,7 +37,6 @@ std::list<moves> AStar::solve(const Puzzle& initial_state,
     //making sure open and closed are empty
     while (!open.empty())
         open.pop();
-
     closed.clear();
 
     nodes_expanded = 0; 
@@ -49,10 +48,11 @@ std::list<moves> AStar::solve(const Puzzle& initial_state,
 
     auto end = std::chrono::high_resolution_clock::now();
 
-    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-    std::cout << duration.count() << " " << std::endl;
-    std::cout << nodes_expanded << " " << std::endl;
-    std::cout << double(summed_heuristics)/nodes_expanded << std::endl;
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    // std::cout << duration.count() << " ";
+    // std::cout << nodes_expanded << " " ;
+    // std::cout << double(summed_heuristics)/nodes_expanded;
+
     return path;
 }
 
@@ -76,9 +76,9 @@ std::list<moves> AStar::driverProcedure(){
         
         //done this way so we can retrieve the path easily after the execution
         //avoid dangling pointers - closed will take care of memory
-        SearchNode *node = new SearchNode(open.top());
+        SearchNode node = std::move(open.top());
         open.pop();                  
-        const SearchNode& current = *closed.emplace(std::move(*node)).first;  
+        const SearchNode& current = *closed.emplace(std::move(node)).first;  
 
         if(current.state.isSolved()) {
             //std::cout << "done!! :DD\n";

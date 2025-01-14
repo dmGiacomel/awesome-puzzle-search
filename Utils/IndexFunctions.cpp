@@ -31,6 +31,20 @@ size_t IndexingFunctions::toCombinadicBase(const std::vector<size_t>& permutatio
     return result;
 }
 
+size_t IndexingFunctions::toCombinadicBase(const std::vector<unsigned char>& permutation){
+    size_t result = 0;
+    size_t k = permutation.size();
+    
+    for (size_t i = 0; i < k; i++){
+        //std::cout << "summing this combination:\t" << permutation[i] << "\t" << i + 1;
+        //std::cout << "combination result:\t" << binomialCoef(permutation[i], i + 1) << "\n";
+        result += binomialCoef(permutation[i], i + 1);
+        //std::cout << "\n";
+    }
+
+    return result;
+}
+
 
 //só deus sabe como isso funciona, mas isso funciona 
 //https://computationalcombinatorics.wordpress.com/2012/09/10/ranking-and-unranking-of-combinations-and-permutations/
@@ -142,11 +156,32 @@ size_t raw_rank (size_t perm_size, std::vector<size_t>& perm, std::vector<size_t
     return (aux + perm_size * raw_rank(perm_size - 1, perm, inv));
 }
 
-
 size_t IndexingFunctions::rank(const std::vector<size_t>& perm){
 
     std::vector<size_t> perm_copy(perm);
     std::vector<size_t> inv = getDual(perm);
+
+    return raw_rank(perm.size(), perm_copy, inv);
+}
+
+
+size_t raw_rank (size_t perm_size, std::vector<unsigned char>& perm, std::vector<unsigned char>& inv){
+
+    if (perm_size == 1){
+        return 0;
+    }
+    size_t current_index = perm_size - 1;
+    size_t aux = perm[current_index];
+
+    std::swap(perm[current_index], perm[inv[current_index]]);
+    std::swap(inv[aux], inv[current_index]);
+    return (aux + perm_size * raw_rank(perm_size - 1, perm, inv));
+}
+
+size_t IndexingFunctions::rank(const std::vector<unsigned char>& perm){
+
+    std::vector<unsigned char> perm_copy(perm);
+    std::vector<unsigned char> inv = getDual(perm);
 
     return raw_rank(perm.size(), perm_copy, inv);
 }

@@ -8,7 +8,6 @@ int PDB::evaluate (const Puzzle& puzzle_state){
 
 bool PDB::build (const Puzzle& initial_state, const Puzzle& goal_state){return true;}
 
-
 // tile_locations is always in ascending order in relation to tiles
 // location tile a - location tile b - location tile c - ... with a = 0 < b < c < ...
 std::vector<size_t> PDB::getTileLocations(const Puzzle& p){
@@ -39,7 +38,6 @@ std::vector<size_t> PDB::getTileLocations(const Puzzle& p){
 // takes care of all the indexation logic
 // returns an iterator to the pdb table for a specific state
 
-
 unsigned char* PDB::tableLocation(const Puzzle& p){
     std::vector<size_t> sorted_tile_locations = getTileLocations(p);
 
@@ -56,6 +54,7 @@ unsigned char* PDB::tableLocation(const Puzzle& p){
     //}
     //std::cout << "\n";
     //std::cout << "cheguei aqui!\n";
+
     auto rank_tile_locations = IndexingFunctions::toCombinadicBase(sorted_tile_locations);
     auto rank_permutation = IndexingFunctions::rank(permutation);
 
@@ -121,6 +120,8 @@ void PDB::shapePatternArray(){
     //std::cout << "tile_combinations: " << tile_combinations << "\n";
     //std::cout << "tile_permutations: " << tile_perms_per_combination << "\n";
 
+    std::cout << tile_combinations * tile_perms_per_combination << " ";
+
     pattern_values = std::vector<std::vector<unsigned char>>(
         tile_combinations,
         std::vector<unsigned char>(tile_perms_per_combination, UCHAR_MAX)
@@ -141,6 +142,23 @@ size_t PDB::verify(){
 }
 
 
+    void PDB::histogram(){
+        
+        std::map<unsigned char, size_t> hist;
+
+        for (const auto& innerVec : pattern_values) {
+            for (unsigned char value : innerVec) {
+                hist[value]++;
+            }
+        }
+
+        // Print the histogram
+        std::cout << "Histogram:" << std::endl;
+        for (const auto& pair : hist) {
+            std::cout << static_cast<int>(pair.first) << ": " << pair.second << std::endl;
+        }
+
+    }
 //---------------------------- DO NOT PASS 0 AS ARGUMENT INSIDE OF PDB_TILES ------------------
 //---------------------------- please ---------------------------------------------------------
 bool PDB::build (const Puzzle& initial_state, const Puzzle& goal_state, const std::vector<unsigned char>& pdb_tiles){
@@ -152,12 +170,13 @@ bool PDB::build (const Puzzle& initial_state, const Puzzle& goal_state, const st
     std::sort(this->pdb_tiles.begin(), this->pdb_tiles.end());
 
     shapePatternArray();
-    std::cout << "shaped!" << "\tcombination array size: " << pattern_values.size() << "\tpermutation array size: " << pattern_values[0].size() << std::endl;
+    //std::cout << "shaped!" << "\tcombination array size: " << pattern_values.size() << "\tpermutation array size: " << pattern_values[0].size() << std::endl;
 
     fillPatternArray();
-    std::cout << "filled!\n";
+    //std::cout << "filled!\n";
 
-    std::cout << "Slots intocados: " << verify() << "\n";
+    histogram();
+    //std::cout << "Slots intocados: " << verify() << "\n";
 
     return true;
 }

@@ -16,7 +16,6 @@ std::list<moves> IDAStar::solve(const Puzzle& initial_state,
     this->goal_state = goal_state;
     global_threshold = 0;
 
-
     nodes_expanded = 0; 
     summed_heuristics = 0;
 
@@ -26,11 +25,10 @@ std::list<moves> IDAStar::solve(const Puzzle& initial_state,
 
     auto end = std::chrono::high_resolution_clock::now();
 
-    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-    std::cout << duration.count() << " " << std::endl;
-    std::cout << nodes_expanded << " " << std::endl;
-    std::cout << double(summed_heuristics)/nodes_expanded << std::endl;
-    std::list<moves> path = driverProcedure();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    std::cout << duration.count() << " ";
+    std::cout << nodes_expanded << " ";
+    std::cout << double(summed_heuristics)/nodes_expanded;
     return path;
 }
 
@@ -117,10 +115,13 @@ std::set<SearchNode> IDAStar::generateSuccessors(const SearchNode& node){
         Puzzle temp = node.state;
         temp.makeMove(i);
         double h = heuristics->evaluate(temp); 
-
         successors.insert(SearchNode(const_cast<SearchNode*>(&node), i, temp, h + g, g, h)).second;
     }
     
+    nodes_expanded += successors.size();
+    for(auto &i : successors){
+        summed_heuristics += i.h;
+    }
     return successors;
 }
 

@@ -2,6 +2,42 @@
 #define APDB_CPP
 #include "APDB.hpp"
 
+AbstractPuzzle::AbstractPuzzle(const Puzzle& p, const std::vector<unsigned char>& pdb_tiles)
+    :Puzzle(p)
+{
+
+    std::unordered_set<unsigned char> pdb_tiles_set;
+    for (auto i : pdb_tiles){
+        pdb_tiles_set.insert(i);
+    }
+
+    int columns = this->board.getColumns();
+    int rows = this->board.getRows();
+
+    for (size_t i = 0; i < rows; i++){
+        for (size_t j = 0; i < columns; j++){
+
+            if(pdb_tiles_set.find(board.getValueAt(i,j)) == pdb_tiles_set.end()){
+                board.setValueAt(i, j, ABSTRACT_TILE);
+            }
+        }
+    }
+
+}
+
+// troca o zero com o tile da posição especificada se ele for um tile abstraído
+bool AbstractPuzzle::swapZeroWithGivenAbstractTile(int row, int column){
+    
+    if (row != column ){
+
+    }
+}
+
+AbstractPuzzle::~AbstractPuzzle(){
+}
+
+
+
 int APDB::evaluate (const Puzzle& puzzle_state){
     if (*tableLocation(puzzle_state) == UCHAR_MAX){
         //std::cout << "bad value!";
@@ -41,7 +77,6 @@ std::vector<size_t> APDB::getPdbTileLocations(const Puzzle& p){
     return std::move(tile_locations);
 
 }
-
 
 //--------- QUE FEIO, QUE FEEEEEIO, nao precisaria se tivesse sido mais esperto no passado -------------------------------------
 // std::vector<unsigned char> gambiarra(const std::vector<size_t>& perm){
@@ -93,7 +128,6 @@ struct hashPuzzle{
     }
 };
 
-
 void APDB::fillPatternArray(){
 
     //tuple is <state, associated cost>    
@@ -110,11 +144,11 @@ void APDB::fillPatternArray(){
         open.pop();
         Puzzle& current_puzzle_state = std::get<0>(current);
         const unsigned char current_state_value = std::get<1>(current);
-        std::cout << "current state value : " << +current_state_value << "\n";
+        //std::cout << "current state value : " << +current_state_value << "\n";
         auto current_index = tableLocation(current_puzzle_state);
         
-        std::cout << "Iteração atual: " << iteracao++ << " -----------------------------------";
-        std::cout << "Open size: " << open.size() << "\n";
+        //std::cout << "Iteração atual: " << iteracao++ << " -----------------------------------";
+        //std::cout << "Open size: " << open.size() << "\n";
 
         std::list<Puzzle> neighbours = transitiveHullOfZeroCostActions(current_puzzle_state);
     
@@ -139,11 +173,10 @@ void APDB::fillPatternArray(){
                 //if it did change state, verify if new state has better cost than older state. if it is the case
                 if (current_index != neighbour_index){     
                     //novo estado eh nao inicializado
-                    if (*neighbour_index == UCHAR_MAX){
+                    if (*neighbour_index < UCHAR_MAX){
                         *neighbour_index = current_state_value + 1;
                         open.push(std::make_tuple(std::move(i), current_state_value + 1));
                     }
-                    
                     // else{          // sanity check - if things are done properly it should never enter this branch
                     //     if(current_state_value + 1 < *neighbour_index){
                     //         *neighbour_index = current_state_value + 1;
@@ -164,6 +197,7 @@ void APDB::fillPatternArray(){
         }
     }
 }
+
 
 std::list<Puzzle> APDB::transitiveHullOfZeroCostActions(const Puzzle& initial_state ){
 
@@ -219,6 +253,8 @@ std::list<Puzzle> APDB::transitiveHullOfZeroCostActions(const Puzzle& initial_st
     return std::move(transitive_hull);
 }
 
+
+
 std::list<Puzzle> APDB::expand(const Puzzle& p){
     std::list<Puzzle> neighbours;
 
@@ -250,7 +286,7 @@ size_t APDB::verify(){
     for (auto &i : pattern_values){
         for (auto &j : i){
             if(j == UCHAR_MAX){
-                j = 0;
+                slots_not_reached++;
             }  
         }
     }
@@ -265,11 +301,38 @@ void APDB::shapePdbPatternArray(){
     //std::cout << "tile_combinations: " << tile_combinations << "\n";
     //std::cout << "tile_permutations: " << tile_perms_per_combination << "\n";
 
+    //std::cout << tile_combinations * tile_perms_per_combination << " ";
+
     pdb_bitmap = std::vector<std::vector<bool>>(
         tile_combinations,
         std::vector<bool>(tile_perms_per_combination, false)
     );
 }
+
+void APDB::destroyPdbArray(){
+    pdb_bitmap.clear();
+}
+
+void APDB::histogram(){
+        
+        std::map<unsigned char, size_t> hist;
+
+        for (const auto& innerVec : pattern_values) {
+            for (unsigned char value : innerVec) {
+                hist[value]++;
+            }
+        }
+
+        // Print the histogram
+        std::cout << "Histogram:" << std::endl;
+        for (const auto& pair : hist) {
+            std::cout << static_cast<int>(pair.first) << ": " << pair.second << std::endl;
+        }
+
+    }
+
+
+
 //---------------------------- DO NOT PASS 0 AS ARGUMENT INSIDE OF PDB_TILES ------------------
 //---------------------------- please ---------------------------------------------------------
 bool APDB::build (const Puzzle& initial_state, const Puzzle& goal_state, const std::vector<unsigned char>& pdb_tiles){
@@ -281,16 +344,31 @@ bool APDB::build (const Puzzle& initial_state, const Puzzle& goal_state, const s
     std::sort(this->pdb_tiles.begin(), this->pdb_tiles.end());
 
     shapePatternArray();
-    std::cout << "shaped!" << "\tcombination array size: " << pattern_values.size() << "\tpermutation array size: " << pattern_values[0].size() << std::endl;
-
+    //std::cout << "shaped!" << "\tcombination array size: " << pattern_values.size() << "\tpermutation array size: " << pattern_values[0].size() << std::endl;
     shapePdbPatternArray();
     fillPatternArray();
-    std::cout << "filled!\n";
-
-    std::cout << "Slots intocados: " << verify() << "\n";
-    std::cin.get();
+    //secondProposalfillPatternArray();
+    destroyPdbArray();
+    //td::cout << "filled!\n";
+    //std::cout << "Slots intocados: " << verify() << "\n";
+    //std::cin.get();
 
     return true;
+}
+
+//void APDB::secondProposalfillPatternArray(){
+
+//}
+
+std::pair<size_t, size_t> APDB::apdbTableLocation(const Puzzle& p){
+    std::vector<size_t> sorted_tile_locations = getTileLocations(p);
+    auto permutation = IndexingFunctions::sortPermutation(sorted_tile_locations);
+    std::sort(sorted_tile_locations.begin(), sorted_tile_locations.end());
+
+    auto rank_tile_locations = IndexingFunctions::toCombinadicBase(sorted_tile_locations);
+    auto rank_permutation = IndexingFunctions::rank(permutation);
+
+    return std::make_pair(rank_tile_locations, rank_permutation);
 }
 
 APDB::APDB(){

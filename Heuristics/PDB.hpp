@@ -8,6 +8,7 @@
 #include <list>
 #include <vector>
 #include "../puzzle_n_minus_1.hpp"
+#include <map>
 
 class PDB : public Heuristics{
 public:
@@ -21,6 +22,8 @@ public:
     virtual ~PDB();
 
     virtual bool build (const Puzzle& initial_state, const Puzzle& goal_state);
+
+    void histogram();
 
 private:
 

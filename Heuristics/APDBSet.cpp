@@ -35,7 +35,6 @@ bool APDBSet::build (const Puzzle& initial_state, const Puzzle& goal_state, cons
 APDBSet::APDBSet()
     :initial_state(2,2), goal_state(2,2)
 {
-
 }
 
 APDBSet::~APDBSet(){

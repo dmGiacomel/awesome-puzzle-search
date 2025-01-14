@@ -10,11 +10,15 @@ namespace IndexingFunctions{
 
     std::size_t rank(const std::vector<size_t>& permutation);
 
+    std::size_t rank(const std::vector<unsigned char>& permutation);
+
     std::vector<unsigned char> unrank(std::size_t rank, std::size_t perm_size);
 
     std::vector<unsigned char> getInversion(std::vector<unsigned char> permutation);
 
     size_t toCombinadicBase(const std::vector<size_t>& combination);
+
+    size_t toCombinadicBase(const std::vector<unsigned char>& permutation);
 
     std::vector<unsigned char> combinationFromRank(size_t rank, size_t k);
 

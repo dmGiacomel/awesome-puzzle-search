@@ -50,6 +50,9 @@
         "unordered_set": "cpp",
         "cstring": "cpp",
         "bitset": "cpp",
-        "chrono": "cpp"
+        "chrono": "cpp",
+        "ctime": "cpp",
+        "ratio": "cpp",
+        "map": "cpp"
     }
 }

@@ -13,6 +13,18 @@
 #include "../puzzle_n_minus_1.hpp"
 #include <bitset>
 #include <chrono>
+#include <map>
+
+const unsigned char ABSTRACT_TILE = 150;
+
+class AbstractPuzzle: public Puzzle{
+
+    AbstractPuzzle(const Puzzle & puzzle, const std::vector<unsigned char>& pdb_tiles);
+    ~AbstractPuzzle();
+
+    bool swapZeroWithGivenAbstractTile(int row, int column);
+
+};
 
 class APDB : public Heuristics{
 public:
@@ -27,22 +39,26 @@ public:
 
     virtual bool build (const Puzzle& initial_state, const Puzzle& goal_state);
 
+    void histogram();
+
 private:
 
     void shapePatternArray();
     void shapePdbPatternArray();
-    void shapePdbAcumulator();
+    void destroyPdbArray();
     void fillPatternArray();
+    void secondProposalfillPatternArray();
 
     std::vector<size_t> getTileLocations(const Puzzle& p);
+    std::pair<size_t, size_t> apdbTableLocation(const Puzzle& p);
     unsigned char* tableLocation(const Puzzle& p);
 
     std::pair<size_t, size_t> pdbTableLocation(const Puzzle& p);
     std::vector<size_t> getPdbTileLocations(const Puzzle& p);
-    
 
     std::list<Puzzle> expand(const Puzzle& p);
     std::list<Puzzle> transitiveHullOfZeroCostActions(const Puzzle& p);
+    std::list<Puzzle> specialExpand(const Puzzle& p);
     size_t verify();
     
     int rows;

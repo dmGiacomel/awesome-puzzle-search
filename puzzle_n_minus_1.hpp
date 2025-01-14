@@ -33,7 +33,7 @@ public:
     Puzzle& operator=(Puzzle&& other) noexcept;
 
     //destructor
-    ~Puzzle();
+    virtual ~Puzzle();
 
     bool isSolved() const;
     bool makeMove(moves move);
@@ -46,15 +46,16 @@ public:
     std::vector<unsigned char> getPuzzleAsString () const;
     std::vector<char> getPuzzleAsSignedString () const;
     bool operator== (const Puzzle& other) const;
-private:
-    
-    Matrix<unsigned char> board;
-    std::tuple<unsigned char, unsigned char> position_of_empty;
+
+protected:
 
     void moveUp();
     void moveLeft();
     void moveRight();
     void moveDown();
+
+    Matrix<unsigned char> board;
+    std::tuple<unsigned char, unsigned char> position_of_empty;
     
 };
 #endif
