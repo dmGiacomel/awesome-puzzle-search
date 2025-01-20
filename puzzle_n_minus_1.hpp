@@ -36,7 +36,7 @@ public:
     virtual ~Puzzle();
 
     bool isSolved() const;
-    bool makeMove(moves move);
+    virtual bool makeMove(moves move);
     unsigned char getTileAt(unsigned char row, unsigned char column) const;
     std::tuple<unsigned char, unsigned char> getPositionOfEmpty() const;
     void printBoard() const;

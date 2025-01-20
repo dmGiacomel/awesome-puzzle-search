@@ -2,12 +2,15 @@
 #define PDB_ABSTRACTED_PUZZLE_HPP
 #include <unordered_set>
 #include <vector>
+#include <iostream>
+#include <algorithm>
 #include "puzzle_n_minus_1.hpp"
 #include "Matrix.hpp"
+#include "Utils/IndexFunctions.hpp"
 
 const unsigned char ABSTRACTED_TILE = 0xff;
 
-class PDBAbstraction : protected Puzzle {
+class PDBAbstraction : public Puzzle {
 
 public:
 
@@ -24,11 +27,13 @@ public:
     std::vector<unsigned char> getPermutation() const;
     std::vector<unsigned char> getLocations() const;
 
+    virtual bool makeMove(moves move);
     void printAbstraction();
 
 protected:
 
     std::vector<unsigned char> tile_permutation;
+    std::vector<unsigned char> tile_permutation_dual;
     std::vector<unsigned char> tile_locations;
 
     std::vector<unsigned char> getAbstractVector(int puzzle_size) const;
