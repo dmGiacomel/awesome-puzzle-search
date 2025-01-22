@@ -8,8 +8,7 @@
 PDBAbstraction::PDBAbstraction (const std::vector<unsigned char>& initial_tile_permutation,
                                 const std::vector<unsigned char>& initial_tile_locations,
                                 int puzzle_rows, int puzzle_columns)
-    :tile_permutation(initial_tile_permutation), tile_permutation_dual(IndexingFunctions::getDual(initial_tile_permutation)), 
-    tile_locations(initial_tile_locations), Puzzle(puzzle_rows,puzzle_columns)
+    :Puzzle(puzzle_rows,puzzle_columns)
 {
     setBoard(initial_tile_locations, initial_tile_permutation);
 }
@@ -19,10 +18,15 @@ PDBAbstraction::~PDBAbstraction(){}
 void PDBAbstraction::setBoard(const std::vector<unsigned char>& initial_tile_permutation,
                               const std::vector<unsigned char>& initial_tile_locations){
 
+    tile_locations = initial_tile_locations;
+    tile_permutation = initial_tile_permutation;
+    tile_permutation_dual = IndexingFunctions::getDual(initial_tile_permutation);
+
     auto puzzle_rows = this->board.getRows();
     auto puzzle_columns = this->board.getColumns();
+
     //setting the tile vector to properly allocate a puzzle
-    std::vector<unsigned char> tile_vector(puzzle_rows * puzzle_columns);
+    std::vector<unsigned char> tile_vector(getAbstractVector(puzzle_rows * puzzle_columns));
 
     //changing superclass atributes from within the derived class in order to properly set
     //Puzzle fields. This seems to be a not so ellegant solution, but will do for now without messing with
@@ -36,7 +40,7 @@ void PDBAbstraction::setBoard(const std::vector<unsigned char>& initial_tile_per
     }    
 
     //not checking for errors at all. use it perfectly under the proper conditions
-    auto position_of_empty_in_tile_vector = tile_permutation_dual[0];
+    auto position_of_empty_in_tile_vector = tile_locations[tile_permutation_dual[0]];
 
     position_of_empty = std::make_tuple((unsigned char)(position_of_empty_in_tile_vector / puzzle_columns), 
                                         (unsigned char)(position_of_empty_in_tile_vector % puzzle_columns));
@@ -79,41 +83,77 @@ void PDBAbstraction::printAbstraction(){
         }
         std::cout << std::endl;
     }
+
+    std::cout << "Permutation:\t";
+
+    for (auto i: tile_permutation){
+        std::cout << i << "\t";
+    }
+    std::cout << "\n";
+
+    std::cout << "Locations:\t";
+
+    for (auto i: tile_locations){
+        std::cout << i << "\t";
+    }
+    std::cout << "\n";
+
+    std::cout << "Permutation Dual:\t";
+
+    for (auto i: tile_permutation_dual){
+        std::cout << i << "\t";
+    }
+    std::cout << "\n";
 }
 
+//this code is somewhat obscure, it surely has a lot of room for improvement
 bool PDBAbstraction::makeMove(moves move){
 
     auto old_zero_tile_row = std::get<0>(position_of_empty);
     auto old_zero_tile_column = std::get<1>(position_of_empty);
-    bool move_succesful = Puzzle::makeMove(move);
+    bool move_succesful = this->Puzzle::makeMove(move);
 
     if (move_succesful){
         //get tile that was swaped with zero
-        auto swaped_tile = board.getValueAt(old_zero_tile_row, old_zero_tile_column);       
-        if (swaped_tile != ABSTRACTED_TILE){
-            
-            //LOT'S of variables in the hope it reduces memory access with proper optimization due
-            //to most of it being dependendent on accessing object fields through the same functions
-            //each variable is also used more than once
+        auto swaped_tile = board.getValueAt(old_zero_tile_row, old_zero_tile_column);
+        
+        auto new_zero_tile_row = std::get<0>(position_of_empty);
+        auto new_zero_tile_column = std::get<1>(position_of_empty);
+        auto puzzle_columns = this->board.getColumns();
 
-            auto puzzle_columns = this->board.getColumns();
+        auto new_moved_tile_vector_position = old_zero_tile_row * puzzle_columns + old_zero_tile_column;
+        auto new_zero_tile_vector_position = new_zero_tile_row * puzzle_columns + new_zero_tile_column;
 
-            auto new_zero_tile_row = std::get<0>(position_of_empty);
-            auto new_zero_tile_column = std::get<1>(position_of_empty);
+        if (swaped_tile != ABSTRACTED_TILE){    //combination is the same
 
-            auto new_moved_tile_vector_position = old_zero_tile_row * puzzle_columns + old_zero_tile_column;
-            auto new_zero_tile_vector_position = new_zero_tile_row * puzzle_columns + new_zero_tile_column;
+            std::swap(tile_permutation[tile_permutation_dual[0]],
+                      tile_permutation[tile_permutation_dual[swaped_tile]]);
 
-            tile_permutation_dual[swaped_tile] = new_moved_tile_vector_position;
-            tile_permutation_dual[0] = new_zero_tile_vector_position;
+            std::swap(tile_permutation_dual[0], tile_permutation_dual[swaped_tile]);
 
-            tile_permutation[new_moved_tile_vector_position] = swaped_tile;
-            tile_permutation[new_zero_tile_vector_position] = 0;
+        }else{                                  //combination changed
 
+            //updating and sorting tile locations with new location of blank tile
+            //if there were time to do it, changing the locations to a std::set would suit better
+            //because of red black tree properties. no sorting would be needed. the board sizes and PDB
+            //wont be very large anyways.
+            tile_locations[tile_permutation_dual[0]] = new_zero_tile_vector_position;
+            std::sort(tile_locations.begin(), tile_locations.end());
 
-        }else{
+            //updating permutation according to new locations
+            //doing it in the old fashion way for the sake of clarity
+            int tile_permutation_size = tile_permutation.size();
+            for(int i{0}; i < tile_permutation_size; i++){
+                tile_permutation[i] = board.getValueAt(tile_locations[i] / puzzle_columns, 
+                                                       tile_locations[i] % puzzle_columns);
+                tile_permutation_dual[tile_permutation[i]] = i;
+            }
 
         }
+
+        return true;
+    }else{
+        return false;
     }
 }
 
