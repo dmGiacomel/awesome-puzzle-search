@@ -4,13 +4,12 @@
 
 
 //the class object can be reused in order to avoid Puzzle object allocations
-//
 PDBAbstraction::PDBAbstraction (const std::vector<unsigned char>& initial_tile_permutation,
                                 const std::vector<unsigned char>& initial_tile_locations,
                                 int puzzle_rows, int puzzle_columns)
     :Puzzle(puzzle_rows,puzzle_columns)
 {
-    setBoard(initial_tile_locations, initial_tile_permutation);
+    setBoard(initial_tile_permutation, initial_tile_locations);
 }
 
 PDBAbstraction::~PDBAbstraction(){}
@@ -87,21 +86,21 @@ void PDBAbstraction::printAbstraction(){
     std::cout << "Permutation:\t";
 
     for (auto i: tile_permutation){
-        std::cout << i << "\t";
+        std::cout << +i << "\t";
     }
     std::cout << "\n";
 
     std::cout << "Locations:\t";
 
     for (auto i: tile_locations){
-        std::cout << i << "\t";
+        std::cout << +i << "\t";
     }
     std::cout << "\n";
 
     std::cout << "Permutation Dual:\t";
 
     for (auto i: tile_permutation_dual){
-        std::cout << i << "\t";
+        std::cout << +i << "\t";
     }
     std::cout << "\n";
 }

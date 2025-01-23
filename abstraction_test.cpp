@@ -2,7 +2,7 @@
 #include <iostream>
 
 int main(){
-    PDBAbstraction abs({3,1,0,4}, 
+    PDBAbstraction abs({2,1,0,3}, 
                        {0,9,12,14},
                        4, 4);
 
@@ -16,7 +16,18 @@ int main(){
 
     abs.printAbstraction();
 
-    auto position_of_empty = abs.getPositionOfEmpty();
+    std::cout << std::endl;
 
-    std::cout << "position_of_empty: " << +std::get<0>(position_of_empty) << "\t"<< +std::get<1>(position_of_empty) << std::endl;
+    abs.makeMove(up);
+    abs.makeMove(up);
+    abs.makeMove(up);
+    abs.makeMove(left);
+
+    abs.printAbstraction();
+    std::cout << std::endl;
+
+        abs.makeMove(right);
+            abs.printAbstraction();
+
+
 }

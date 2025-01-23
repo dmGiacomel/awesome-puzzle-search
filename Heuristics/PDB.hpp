@@ -9,6 +9,9 @@
 #include <vector>
 #include "../puzzle_n_minus_1.hpp"
 #include <map>
+#include "../PDBAbstractedPuzzle.hpp"
+
+const unsigned char INFINITY = UCHAR_MAX;
 
 class PDB : public Heuristics{
 public:
@@ -32,6 +35,7 @@ private:
 
     std::vector<size_t> getTileLocations(const Puzzle& p);
     unsigned char* tableLocation(const Puzzle& p);
+    std::tuple<size_t, size_t> tableIndexes(const Puzzle& p);
 
     std::list<Puzzle> expand(const Puzzle& p);
     size_t verify();

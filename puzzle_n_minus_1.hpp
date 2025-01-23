@@ -45,7 +45,7 @@ public:
 
     std::vector<unsigned char> getPuzzleAsString () const;
     std::vector<char> getPuzzleAsSignedString () const;
-    bool operator== (const Puzzle& other) const;
+    bool operator== (const Puzzle& other) const;    
 
 protected:
 
