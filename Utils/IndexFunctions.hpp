@@ -32,7 +32,11 @@ namespace IndexingFunctions{
 
     std::vector<std::size_t> sortPermutation(const std::vector<size_t>& vec);
 
+    std::vector<unsigned char> sortPermutation(const std::vector<unsigned char>& vec);
+
     std::vector<std::size_t> applyPermutation(const std::vector<size_t>& vec, const std::vector<std::size_t>& p);
+
+    std::vector<unsigned char> applyPermutation(const std::vector<unsigned char>& vec, const std::vector<unsigned char>& p);
 
     void build_binomial_coef_table();
 }   

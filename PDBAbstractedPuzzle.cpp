@@ -12,13 +12,81 @@ PDBAbstraction::PDBAbstraction (const std::vector<unsigned char>& initial_tile_p
     setBoard(initial_tile_permutation, initial_tile_locations);
 }
 
+PDBAbstraction::PDBAbstraction (const Puzzle& p, const std::vector<unsigned char>& pdb_tiles)
+    :Puzzle(p)
+{
+
+    size_t pdb_tiles_size = pdb_tiles.size();
+
+    std::vector<unsigned char> tile_locations(pdb_tiles_size + 1); //0 is no counted on pdb_tiles 
+    std::vector<unsigned char> dual_state(IndexingFunctions::getDual(p.getPuzzleAsString()));
+
+    std::cout << "aaaaaaaaaaa\n";
+
+    tile_locations[0] = dual_state[0];
+    for(size_t i = 0; i < pdb_tiles_size; i++){
+        tile_locations[i + 1] = dual_state[pdb_tiles[i]];
+    }
+
+    auto permutation = IndexingFunctions::sortPermutation(tile_locations);
+    
+    tile_locations = IndexingFunctions::applyPermutation(tile_locations, permutation);
+
+
+    setBoard(permutation, tile_locations);
+
+    std::cout << "ccccccccccccccccc\n";
+}
+
+
+PDBAbstraction::PDBAbstraction(const PDBAbstraction& other)
+    :Puzzle(other), tile_locations(other.tile_locations), tile_permutation(other.tile_permutation),
+    tile_permutation_dual(other.tile_permutation_dual) 
+{
+    
+}
+
+PDBAbstraction::PDBAbstraction(PDBAbstraction&& other) noexcept
+    :Puzzle(std::move(other)), tile_locations(std::move(other.tile_locations)), tile_permutation(std::move(other.tile_permutation)),
+    tile_permutation_dual(std::move(other.tile_permutation_dual))
+{
+
+}
+
+//copy assignement operator
+PDBAbstraction& PDBAbstraction::operator=(const PDBAbstraction& other){
+    
+    if(this != &other){
+        Puzzle::operator=(other);  
+        tile_locations = other.tile_locations;
+        tile_permutation = other.tile_permutation;
+        tile_permutation_dual = other.tile_permutation_dual;
+    }
+
+    return *this;
+}
+
+//move assignement operator
+PDBAbstraction& PDBAbstraction::operator=(PDBAbstraction&& other) noexcept{
+
+    if(this != &other){
+        Puzzle::operator=(std::move(other));
+        tile_locations = std::move(other.tile_locations);
+        tile_permutation = std::move(other.tile_permutation);
+        tile_permutation_dual = std::move(other.tile_permutation_dual);
+    }
+
+    return *this;
+}
 PDBAbstraction::~PDBAbstraction(){}
 
 void PDBAbstraction::setBoard(const std::vector<unsigned char>& initial_tile_permutation,
                               const std::vector<unsigned char>& initial_tile_locations){
 
-    tile_locations = initial_tile_locations;
-    tile_permutation = initial_tile_permutation;
+
+    std::cout << "cheguei aqui" << std::endl;
+    this->tile_locations = initial_tile_locations;
+    this->tile_permutation = initial_tile_permutation;
     tile_permutation_dual = IndexingFunctions::getDual(initial_tile_permutation);
 
     auto puzzle_rows = this->board.getRows();

@@ -28,6 +28,7 @@ std::vector<size_t> PDB::getTileLocations(const Puzzle& p){
     return std::move(tile_locations);
 }
 
+
 //--------- QUE FEIO, QUE FEEEEEIO, nao precisaria se tivesse sido mais esperto no passado -------------------------------------
 // std::vector<unsigned char> gambiarra(const std::vector<size_t>& perm){
 //     std::vector<unsigned char> vetordotipocerto(perm.size());
@@ -71,10 +72,32 @@ std::tuple<size_t, size_t> PDB::tableIndexes(const Puzzle& p){
 
 
 //---------------------------------------------------------------------------------------
-// this can be improved by using a abstracted version of the puzzle
-// no time for now!
 void PDB::fillPatternArray(){
-    auto goal_state = Puzzle(rows, columns); 
+
+    PDBAbstraction goal_state = PDBAbstraction(Puzzle(rows, columns), pdb_tiles);
+    pattern_values[IndexingFunctions::toCombinadicBase(goal_state.getLocations())]
+                  [IndexingFunctions::rank(goal_state.getPermutation())] = 0;
+
+    unsigned char current_level = 1;
+    size_t total_table_entries = total_tile_locations * total_tile_permutations;
+    size_t entries_filled = 1;
+
+    //repeatedly scan pdb looking for entries at the given level
+    //done with two loops to better accomodate the indexation logic so far. 
+    //it could easily be done with one by changing from array to matrix coordinates
+    while (entries_filled != total_table_entries){
+    
+        for (size_t locations = 0; locations < total_tile_locations; total_tile_locations++){
+            for(size_t permutation = 0; permutation < total_tile_permutations; permutation++){
+                if (pattern_values[locations][permutation] == current_level){
+                    
+                }
+
+            }
+        }
+
+        current_level++;
+    }
     
 }
 
@@ -92,12 +115,12 @@ std::list<Puzzle> PDB::expand(const Puzzle& p){
 
 void PDB::shapePatternArray(){
 
-    size_t tile_combinations  = IndexingFunctions::binomialCoef(rows * columns, pdb_tiles.size() + 1); //+1 because pdb_tiles disregard zero;
-    size_t tile_perms_per_combination = IndexingFunctions::factorial(pdb_tiles.size() + 1);
+    total_tile_locations  = IndexingFunctions::binomialCoef(rows * columns, pdb_tiles.size() + 1); //+1 because pdb_tiles disregard zero;
+    total_tile_permutations = IndexingFunctions::factorial(pdb_tiles.size() + 1);
 
     pattern_values = std::vector<std::vector<unsigned char>>(
-        tile_combinations,
-        std::vector<unsigned char>(tile_perms_per_combination, INFINITY)
+        total_tile_locations,
+        std::vector<unsigned char>(total_tile_permutations, INFINITY)
     );
 }
 
@@ -115,23 +138,23 @@ size_t PDB::verify(){
 }
 
 
-    void PDB::histogram(){
-        
-        std::map<unsigned char, size_t> hist;
+void PDB::histogram(){
+    
+    std::map<unsigned char, size_t> hist;
 
-        for (const auto& innerVec : pattern_values) {
-            for (unsigned char value : innerVec) {
-                hist[value]++;
-            }
+    for (const auto& innerVec : pattern_values) {
+        for (unsigned char value : innerVec) {
+            hist[value]++;
         }
-
-        // Print the histogram
-        std::cout << "Histogram:" << std::endl;
-        for (const auto& pair : hist) {
-            std::cout << static_cast<int>(pair.first) << ": " << pair.second << std::endl;
-        }
-
     }
+
+    // Print the histogram
+    std::cout << "Histogram:" << std::endl;
+    for (const auto& pair : hist) {
+        std::cout << static_cast<int>(pair.first) << ": " << pair.second << std::endl;
+    }
+
+}
 //---------------------------- DO NOT PASS 0 AS ARGUMENT INSIDE OF PDB_TILES ------------------
 //---------------------------- please ---------------------------------------------------------
 bool PDB::build (const Puzzle& initial_state, const Puzzle& goal_state, const std::vector<unsigned char>& pdb_tiles){

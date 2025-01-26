@@ -17,7 +17,7 @@ class PDB : public Heuristics{
 public:
 
     virtual int evaluate (const Puzzle& puzzle_state);
-
+ 
     virtual bool build (const Puzzle& initial_state, const Puzzle& goal_state, const std::vector<unsigned char>& pdb_tiles);
 
     PDB();
@@ -34,7 +34,8 @@ private:
     void fillPatternArray();
 
     std::vector<size_t> getTileLocations(const Puzzle& p);
-    unsigned char* tableLocation(const Puzzle& p);
+
+    // unsigned char* tableLocation(const Puzzle& p);
     std::tuple<size_t, size_t> tableIndexes(const Puzzle& p);
 
     std::list<Puzzle> expand(const Puzzle& p);
@@ -42,6 +43,9 @@ private:
 
     int rows;
     int columns;
+
+    size_t total_tile_locations;
+    size_t total_tile_permutations;
     
     std::vector<unsigned char> pdb_tiles;
     std::vector<std::vector<unsigned char>> pattern_values;

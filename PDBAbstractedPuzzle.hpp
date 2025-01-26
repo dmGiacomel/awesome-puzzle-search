@@ -10,8 +10,6 @@
 
 //compile this test: g++ abstraction_test.cpp PDBAbstractedPuzzle.cpp puzzle_n_minus_1.cpp Utils/IndexFunctions.cpp -o abstraction_test.x
 
-
-
 const unsigned char ABSTRACTED_TILE = 0xff;
 
 class PDBAbstraction : public Puzzle {
@@ -21,6 +19,8 @@ public:
     PDBAbstraction (const std::vector<unsigned char>& initial_tile_permutation,
                     const std::vector<unsigned char>& initial_tile_locations,
                     int puzzle_rows, int puzzle_columns);
+
+    PDBAbstraction (const Puzzle& state, const std::vector<unsigned char>& pdb_tiles);
 
     ~PDBAbstraction ();
 
