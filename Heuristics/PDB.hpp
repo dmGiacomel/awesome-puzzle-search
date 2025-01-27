@@ -2,6 +2,7 @@
 #define PDB_HPP
 #include "Heuristics.hpp"
 #include "../Utils/IndexFunctions.hpp"
+#include "../Utils/MovementsHandler.hpp"
 #include <queue>
 #include <set>
 #include <tuple>
@@ -28,6 +29,9 @@ public:
 
     void histogram();
 
+    size_t verify();
+
+
 private:
 
     void shapePatternArray();
@@ -43,9 +47,7 @@ private:
     void setPatternValueAt(const std::tuple<size_t, size_t>& indexes, unsigned char value);
     void setPatternValueAt(size_t locations, size_t permutation, unsigned char value);
 
-    std::list<PDBAbstraction> expand(const PDBAbstraction& p);
-
-    size_t verify();
+    size_t expandAndUpdate(PDBAbstraction& p, unsigned char current_level);
 
     int rows;
     int columns;
