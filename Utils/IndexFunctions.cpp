@@ -235,14 +235,10 @@ std::vector<std::size_t> IndexingFunctions::sortPermutation(const std::vector<si
 
 std::vector<unsigned char> IndexingFunctions::sortPermutation(const std::vector<unsigned char>& vec){
 
-    std::cout << "beggining sorting\n" << std::endl;
     std::vector<unsigned char> p(vec.size());
     std::iota(p.begin(), p.end(), 0);
     std::sort(p.begin(), p.end(),
         [&](std::size_t i, std::size_t j){ return vec[i] < vec[j]; });
-
-
-        std::cout << "ending sorting\n";
     return std::move(p);
 }
 
@@ -258,16 +254,12 @@ std::vector<size_t> IndexingFunctions::applyPermutation(const std::vector<size_t
 
 std::vector<unsigned char> IndexingFunctions::applyPermutation(const std::vector<unsigned char>& vec, const std::vector<unsigned char>& p)
 
-{
-    std::cout << "aplicando permutacao " << std::endl; 
-    std::cout << "vec size: " << vec.size() << "\tpsize: " << p.size() << std::endl;
-    
+{    
     std::vector<unsigned char> sorted_vec(vec.size());
     for (std::size_t i = 0; i < vec.size(); ++i) {
         sorted_vec[i] = vec[p[i]];
     }
 
-    std::cout << "permutacao aplicada\n";
     return std::move(sorted_vec);
 }
 #endif

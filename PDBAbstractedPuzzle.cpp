@@ -82,10 +82,12 @@ PDBAbstraction::~PDBAbstraction(){}
 
 void PDBAbstraction::setBoard(const std::vector<unsigned char>& initial_tile_permutation,
                               const std::vector<unsigned char>& initial_tile_locations){
+     
 
-
-    std::cout << "cheguei aqui" << std::endl;
     this->tile_locations = initial_tile_locations;
+
+    //just to be sure about it
+    std::sort(initial_tile_locations.begin(), initial_tile_locations.end());
     this->tile_permutation = initial_tile_permutation;
     tile_permutation_dual = IndexingFunctions::getDual(initial_tile_permutation);
 

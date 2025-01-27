@@ -33,17 +33,23 @@ private:
     void shapePatternArray();
     void fillPatternArray();
 
-    std::vector<size_t> getTileLocations(const Puzzle& p);
+    std::tuple<size_t, size_t> getIndexes(const PDBAbstraction& abs);
+    PDBAbstraction unindex (size_t locations, size_t permutation); 
+    PDBAbstraction unindex (const std::tuple<size_t, size_t>& indexes); 
 
-    // unsigned char* tableLocation(const Puzzle& p);
-    std::tuple<size_t, size_t> tableIndexes(const Puzzle& p);
+    unsigned char patternValueAt(const std::tuple<size_t, size_t>& indexes);
+    unsigned char patternValueAt(size_t locations, size_t permutation);
 
-    std::list<Puzzle> expand(const Puzzle& p);
+    void setPatternValueAt(const std::tuple<size_t, size_t>& indexes, unsigned char value);
+    void setPatternValueAt(size_t locations, size_t permutation, unsigned char value);
+
+    std::list<PDBAbstraction> expand(const PDBAbstraction& p);
+
     size_t verify();
 
     int rows;
     int columns;
-
+    unsigned char n_pdb_tiles;
     size_t total_tile_locations;
     size_t total_tile_permutations;
     

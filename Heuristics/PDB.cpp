@@ -3,120 +3,102 @@
 #include "PDB.hpp"
 
 int PDB::evaluate (const Puzzle& puzzle_state){
-    auto indexes = tableIndexes(puzzle_state);
-    return pattern_values[std::get<0>(indexes)][std::get<1>(indexes)];
+    return patternValueAt(getIndexes(PDBAbstraction(puzzle_state, pdb_tiles)));
 }
 
+//shame on me, it will not be fixed though
 bool PDB::build (const Puzzle& initial_state, const Puzzle& goal_state){
     return true;
 }
 
-// tile_locations is always in ascending order in relation to tiles
-// location tile a - location tile b - location tile c - ... with a = 0 < b < c < ...
-std::vector<size_t> PDB::getTileLocations(const Puzzle& p){
-    size_t pdb_tiles_size = pdb_tiles.size();
-
-    std::vector<size_t> tile_locations(pdb_tiles_size + 1); //+1 because pdb_tiles disregard zero;
-    std::vector<unsigned char> dual_state(IndexingFunctions::getDual(p.getPuzzleAsString()));
-
-    //0 is not a part of pdb_tiles, therefore this needs to be done outside of for loop
-    tile_locations[0] = dual_state[0];
-    for(size_t i = 0; i < pdb_tiles_size; i++){
-        tile_locations[i + 1] = dual_state[pdb_tiles[i]];
-    }
-
-    return std::move(tile_locations);
+std::tuple<size_t, size_t> PDB::getIndexes(const PDBAbstraction& abs){
+    return std::make_tuple(IndexingFunctions::toCombinadicBase(abs.getLocations()),
+                           IndexingFunctions::rank(abs.getPermutation()));
 }
 
-
-//--------- QUE FEIO, QUE FEEEEEIO, nao precisaria se tivesse sido mais esperto no passado -------------------------------------
-// std::vector<unsigned char> gambiarra(const std::vector<size_t>& perm){
-//     std::vector<unsigned char> vetordotipocerto(perm.size());
-//     auto perm_size = perm.size();
-//     for (size_t i = 0; i < perm_size; i++){
-//         vetordotipocerto[i] = perm[i];
-//     }
-//     return std::move(vetordotipocerto);
-// }
-//------------------------------------------------------------------------
-// // takes care of all the indexation logic
-// // returns an iterator to the pdb table for a specific state
-
-// unsigned char* PDB::tableLocation(const Puzzle& p){
-//     std::vector<size_t> sorted_tile_locations = getTileLocations(p);
-
-//     auto permutation = IndexingFunctions::sortPermutation(sorted_tile_locations);
-//     //apply permutation so we don't have to sort it
-//     //ahead of time optimization, but ...
-//     sorted_tile_locations = IndexingFunctions::applyPermutation(sorted_tile_locations, permutation);
-
-//     auto rank_tile_locations = IndexingFunctions::toCombinadicBase(sorted_tile_locations);
-//     auto rank_permutation = IndexingFunctions::rank(permutation);
-
-//     return (&pattern_values[rank_tile_locations][rank_permutation]);
-// }
-
-std::tuple<size_t, size_t> PDB::tableIndexes(const Puzzle& p){
-    std::vector<size_t> sorted_tile_locations = getTileLocations(p);
-
-    auto permutation = IndexingFunctions::sortPermutation(sorted_tile_locations);
-    //apply permutation so we don't have to sort it
-    //ahead of time optimization, but ...
-    sorted_tile_locations = IndexingFunctions::applyPermutation(sorted_tile_locations, permutation);
-
-    auto rank_tile_locations = IndexingFunctions::toCombinadicBase(sorted_tile_locations);
-    auto rank_permutation = IndexingFunctions::rank(permutation);
-
-    return std::make_tuple(rank_tile_locations, rank_permutation);
+unsigned char PDB::patternValueAt(const std::tuple<size_t, size_t>& indexes){
+    return pattern_values[std::get<0>(indexes)][std::get<1>(indexes)];
 }
 
+unsigned char PDB::patternValueAt(size_t locations, size_t permutation){
+    return pattern_values[locations][permutation];
+}
+
+PDBAbstraction PDB::unindex (size_t locations, size_t permutation){
+    return std::move(PDBAbstraction(IndexingFunctions::unrank(permutation, n_pdb_tiles), 
+                                    IndexingFunctions::combinationFromRank(locations, n_pdb_tiles),
+                                    rows, columns));
+}
+
+PDBAbstraction PDB::unindex (const std::tuple<size_t, size_t>& indexes){
+    return std::move(PDBAbstraction(IndexingFunctions::unrank(std::get<0>(indexes), n_pdb_tiles), 
+                                    IndexingFunctions::combinationFromRank(std::get<1>(indexes), n_pdb_tiles),
+                                    rows, columns));
+}
+
+void PDB::setPatternValueAt(const std::tuple<size_t, size_t>& indexes, unsigned char value){
+    pattern_values[std::get<0>(indexes)][std::get<1>(indexes)] = value;
+}
+
+void PDB::setPatternValueAt(size_t locations, size_t permutation, unsigned char value){
+    pattern_values[locations][permutation] = value;
+}
 
 //---------------------------------------------------------------------------------------
+// this implementation can be improved in terms of cache locality
+//no time for now
 void PDB::fillPatternArray(){
 
     PDBAbstraction goal_state = PDBAbstraction(Puzzle(rows, columns), pdb_tiles);
-    pattern_values[IndexingFunctions::toCombinadicBase(goal_state.getLocations())]
-                  [IndexingFunctions::rank(goal_state.getPermutation())] = 0;
+    setPatternValueAt(getIndexes(goal_state), 0);
 
     unsigned char current_level = 1;
-    size_t total_table_entries = total_tile_locations * total_tile_permutations;
     size_t entries_filled = 1;
 
-    //repeatedly scan pdb looking for entries at the given level
-    //done with two loops to better accomodate the indexation logic so far. 
-    //it could easily be done with one by changing from array to matrix coordinates
-    while (entries_filled != total_table_entries){
-    
+    while (entries_filled > 0){
+        entries_filled = 0;
+        //done with two loops to better accomodate the indexation logic so far. 
+        //it could easily be done with only one loop by changing from array to matrix coordinates
         for (size_t locations = 0; locations < total_tile_locations; total_tile_locations++){
             for(size_t permutation = 0; permutation < total_tile_permutations; permutation++){
-                if (pattern_values[locations][permutation] == current_level){
-                    
-                }
 
+                if (patternValueAt(locations, permutation) == current_level){
+                    PDBAbstraction current(unindex(locations, permutation));
+                    
+                    std::list<PDBAbstraction> neighbours = expand(current);
+                    for (auto &neighbour : neighbours){
+                        if(patternValueAt(getIndexes(neighbour)) == INFINITY){
+                            setPatternValueAt(getIndexes(neighbour), current_level + 1);
+                            entries_filled++;
+                        }
+                    }
+
+                }
             }
         }
-
         current_level++;
     }
-    
 }
 
-std::list<Puzzle> PDB::expand(const Puzzle& p){
-    std::list<Puzzle> neighbours;
+std::list<PDBAbstraction> PDB::expand(const PDBAbstraction& p){
+    std::list<PDBAbstraction> neighbours;
 
     auto available_moves = p.availableMoves();
+    PDBAbstraction temp(p);
+
     for (auto i : available_moves){
-        Puzzle temp = p;
+        temp = p;
         temp.makeMove(i);
-        neighbours.push_back(std::move(temp));
+        neighbours.emplace_back(temp);
     }
     return std::move(neighbours);
 }
 
 void PDB::shapePatternArray(){
-
-    total_tile_locations  = IndexingFunctions::binomialCoef(rows * columns, pdb_tiles.size() + 1); //+1 because pdb_tiles disregard zero;
-    total_tile_permutations = IndexingFunctions::factorial(pdb_tiles.size() + 1);
+    
+    n_pdb_tiles = pdb_tiles.size() + 1;//+1 because pdb_tiles disregard zero;
+    total_tile_locations  = IndexingFunctions::binomialCoef(rows * columns, n_pdb_tiles); 
+    total_tile_permutations = IndexingFunctions::factorial(n_pdb_tiles);
 
     pattern_values = std::vector<std::vector<unsigned char>>(
         total_tile_locations,
@@ -180,36 +162,3 @@ PDB::~PDB(){
 
 }
 #endif
-
-
-
-
-
-
-
-// void PDB::fillPatternArray(){
-
-//     //initial state (goal state for the search method)
-//     size_t states = 0;
-//     Puzzle p(rows, columns);
-//     *tableLocation(p) = 0;
-
-//     std::queue<Puzzle> open;
-//     open.push(std::move(p));
-
-//     while (!open.empty()){
-//         Puzzle current = std::move(open.front());
-//         open.pop();
-
-//         //std::cout << "examining state: " << states++ << "with value: " << +*tableLocation(current) << "\n";
-//         //std::cout << "queue states: " << open.size()<< "\n";
-//         std::list<Puzzle> neighbours = expand(current);
-//         for (Puzzle &i : neighbours){
-//             auto current_table_position = tableLocation(i);
-//             if (*current_table_position == UCHAR_MAX){
-//                 *current_table_position = *tableLocation(current) + 1;
-//                 open.push(std::move(i));
-//             }
-//         }
-//     }
-// }
