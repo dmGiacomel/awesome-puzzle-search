@@ -1,10 +1,10 @@
-#ifndef PDB_ABSTRACTED_PUZZLE_CPP
-#define PDB_ABSTRACTED_PUZZLE_CPP
-#include "PDBAbstractedPuzzle.hpp"
+#ifndef APDB_ABSTRACTED_PUZZLE_CPP
+#define APDB_ABSTRACTED_PUZZLE_CPP 
+#include "APDBAbstractedPuzzle.hpp"
 
 
 //the class object can be reused in order to avoid Puzzle object allocations
-PDBAbstraction::PDBAbstraction (const std::vector<unsigned char>& initial_tile_permutation,
+APDBAbstraction::APDBAbstraction (const std::vector<unsigned char>& initial_tile_permutation,
                                 const std::vector<unsigned char>& initial_tile_locations,
                                 int puzzle_rows, int puzzle_columns)
     :Puzzle(puzzle_rows,puzzle_columns)
@@ -12,7 +12,7 @@ PDBAbstraction::PDBAbstraction (const std::vector<unsigned char>& initial_tile_p
     setBoard(initial_tile_permutation, initial_tile_locations);
 }
 
-PDBAbstraction::PDBAbstraction (const Puzzle& p, const std::vector<unsigned char>& pdb_tiles)
+APDBAbstraction::APDBAbstraction (const Puzzle& p, const std::vector<unsigned char>& pdb_tiles)
     :Puzzle(p)
 {
 
@@ -36,14 +36,14 @@ PDBAbstraction::PDBAbstraction (const Puzzle& p, const std::vector<unsigned char
 }
 
 
-PDBAbstraction::PDBAbstraction(const PDBAbstraction& other)
+APDBAbstraction::APDBAbstraction(const APDBAbstraction& other)
     :Puzzle(other), tile_locations(other.tile_locations), tile_permutation(other.tile_permutation),
     tile_permutation_dual(other.tile_permutation_dual) 
 {
     
 }
 
-PDBAbstraction::PDBAbstraction(PDBAbstraction&& other) noexcept
+APDBAbstraction::APDBAbstraction(APDBAbstraction&& other) noexcept
     :Puzzle(std::move(other)), tile_locations(std::move(other.tile_locations)), tile_permutation(std::move(other.tile_permutation)),
     tile_permutation_dual(std::move(other.tile_permutation_dual))
 {
@@ -51,7 +51,7 @@ PDBAbstraction::PDBAbstraction(PDBAbstraction&& other) noexcept
 }
 
 //copy assignement operator
-PDBAbstraction& PDBAbstraction::operator=(const PDBAbstraction& other){
+APDBAbstraction& APDBAbstraction::operator=(const APDBAbstraction& other){
     
     if(this != &other){
         Puzzle::operator=(other);  
@@ -64,7 +64,7 @@ PDBAbstraction& PDBAbstraction::operator=(const PDBAbstraction& other){
 }
 
 //move assignement operator
-PDBAbstraction& PDBAbstraction::operator=(PDBAbstraction&& other) noexcept{
+APDBAbstraction& APDBAbstraction::operator=(APDBAbstraction&& other) noexcept{
 
     if(this != &other){
         Puzzle::operator=(std::move(other));
@@ -75,9 +75,9 @@ PDBAbstraction& PDBAbstraction::operator=(PDBAbstraction&& other) noexcept{
 
     return *this;
 }
-PDBAbstraction::~PDBAbstraction(){}
+APDBAbstraction::~APDBAbstraction(){}
 
-void PDBAbstraction::setBoard(const std::vector<unsigned char>& initial_tile_permutation,
+void APDBAbstraction::setBoard(const std::vector<unsigned char>& initial_tile_permutation,
                               const std::vector<unsigned char>& initial_tile_locations){
      
 
@@ -112,7 +112,7 @@ void PDBAbstraction::setBoard(const std::vector<unsigned char>& initial_tile_per
                                         (unsigned char)(position_of_empty_in_tile_vector % puzzle_columns));
 }
 
-std::vector<unsigned char> PDBAbstraction::getAbstractVector(int puzzle_size) const{
+std::vector<unsigned char> APDBAbstraction::getAbstractVector(int puzzle_size) const{
     std::vector<unsigned char> abstracted_board(puzzle_size);
 
     for(int i = 0; i < puzzle_size; i++){
@@ -127,11 +127,11 @@ std::vector<unsigned char> PDBAbstraction::getAbstractVector(int puzzle_size) co
     return abstracted_board;
 }
 
-const std::vector<unsigned char>& PDBAbstraction::getPermutation() const{
+const std::vector<unsigned char>& APDBAbstraction::getPermutation() const{
     return tile_permutation;
 }
 
-const std::vector<unsigned char>& PDBAbstraction::getLocations() const{
+const std::vector<unsigned char>& APDBAbstraction::getLocations() const{
     return tile_locations;
 }
 
@@ -174,7 +174,7 @@ void PDBAbstraction::printAbstraction(){
 }
 
 //this code is somewhat obscure, it surely has a lot of room for improvement
-bool PDBAbstraction::makeMove(moves move){
+bool APDBAbstraction::makeMove(moves move){
 
     auto old_zero_tile_row = std::get<0>(position_of_empty);
     auto old_zero_tile_column = std::get<1>(position_of_empty);
@@ -223,5 +223,4 @@ bool PDBAbstraction::makeMove(moves move){
         return false;
     }
 }
-
 #endif

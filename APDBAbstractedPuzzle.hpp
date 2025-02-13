@@ -1,40 +1,41 @@
-#ifndef PDB_ABSTRACTED_PUZZLE_HPP
-#define PDB_ABSTRACTED_PUZZLE_HPP
+#ifndef APDB_ABSTRACTION_PUZZLE_HPP
+#define APDB_ABSTRACTION_PUZZLE_HPP 
 #include <unordered_set>
 #include <vector>
 #include <iostream>
 #include <algorithm>
 #include "puzzle_n_minus_1.hpp"
 #include "Utils/IndexFunctions.hpp"
+#include <unordered_map>
+#include <unordered_set>
 
 //compile this test: g++ abstraction_test.cpp PDBAbstractedPuzzle.cpp puzzle_n_minus_1.cpp Utils/IndexFunctions.cpp -o abstraction_test.x
 
 const unsigned char ABSTRACTED_TILE = 0xff;
 
-class PDBAbstraction : public Puzzle {
+class APDBAbstraction : public Puzzle {
 
 public:
 
-    PDBAbstraction (const std::vector<unsigned char>& initial_tile_permutation,
+    APDBAbstraction (const std::vector<unsigned char>& initial_tile_permutation,
                     const std::vector<unsigned char>& initial_tile_locations,
                     int puzzle_rows, int puzzle_columns);
 
-    PDBAbstraction (const Puzzle& state, const std::vector<unsigned char>& pdb_tiles);
+    APDBAbstraction (const Puzzle& state, const std::vector<unsigned char>& pdb_tiles);
 
-    ~PDBAbstraction ();
+    ~APDBAbstraction ();
 
-    //copy constructor
-    PDBAbstraction(const PDBAbstraction& other);
+       //copy constructor
+    APDBAbstraction(const APDBAbstraction& other);
 
     //move consctructor
-    PDBAbstraction(PDBAbstraction&& other) noexcept;
+    APDBAbstraction(APDBAbstraction&& other) noexcept;
 
     //copy assignement operator
-    PDBAbstraction& operator=(const PDBAbstraction& other);
+    APDBAbstraction& operator=(const APDBAbstraction& other);
 
     //move assignement operator
-    PDBAbstraction& operator=(PDBAbstraction&& other) noexcept;
-
+    APDBAbstraction& operator=(APDBAbstraction&& other) noexcept;
 
     void setBoard(const std::vector<unsigned char>& initial_tile_permutation,
                   const std::vector<unsigned char>& initial_tile_locations);

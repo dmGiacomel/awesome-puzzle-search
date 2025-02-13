@@ -11,6 +11,7 @@
 #include "../puzzle_n_minus_1.hpp"
 #include <map>
 #include "../PDBAbstractedPuzzle.hpp"
+#include <omp.h>
 
 const unsigned char INFINITY = UCHAR_MAX;
 

@@ -128,7 +128,7 @@ std::vector<unsigned char> IndexingFunctions::getDual (const std::vector<unsigne
         dual[perm[i]] = i;
     }
 
-    return std::move(dual);
+    return dual;
 }
 
 
@@ -140,7 +140,7 @@ std::vector<size_t> IndexingFunctions::getDual (const std::vector<size_t>& perm)
         dual[perm[i]] = i;
     }
 
-    return std::move(dual);
+    return dual;
 }
 
 size_t raw_rank (size_t perm_size, std::vector<size_t>& perm, std::vector<size_t>& inv){
@@ -198,7 +198,7 @@ std::vector<unsigned char> IndexingFunctions::unrank(size_t rank, size_t perm_si
     std::vector<unsigned char> id(perm_size);
     std::iota(id.begin(), id.end(), 0 );
     unrank_raw(perm_size, rank, id);
-    return std::move(id);
+    return id;
 }
 
 // std::vector<unsigned char> IndexingFunctions::getInversion(const std::vector<unsigned char>& permutation){
@@ -230,7 +230,7 @@ std::vector<std::size_t> IndexingFunctions::sortPermutation(const std::vector<si
     std::iota(p.begin(), p.end(), 0);
     std::sort(p.begin(), p.end(),
         [&](std::size_t i, std::size_t j){ return vec[i] < vec[j]; });
-    return std::move(p);
+    return p;
 }
 
 std::vector<unsigned char> IndexingFunctions::sortPermutation(const std::vector<unsigned char>& vec){
@@ -239,7 +239,7 @@ std::vector<unsigned char> IndexingFunctions::sortPermutation(const std::vector<
     std::iota(p.begin(), p.end(), 0);
     std::sort(p.begin(), p.end(),
         [&](std::size_t i, std::size_t j){ return vec[i] < vec[j]; });
-    return std::move(p);
+    return p;
 }
 
 std::vector<size_t> IndexingFunctions::applyPermutation(const std::vector<size_t>& vec, const std::vector<std::size_t>& p)
@@ -248,18 +248,17 @@ std::vector<size_t> IndexingFunctions::applyPermutation(const std::vector<size_t
     for (std::size_t i = 0; i < vec.size(); ++i) {
         sorted_vec[i] = vec[p[i]];
     }
-    return std::move(sorted_vec);
+    return sorted_vec;
 }
 
 
 std::vector<unsigned char> IndexingFunctions::applyPermutation(const std::vector<unsigned char>& vec, const std::vector<unsigned char>& p)
-
 {    
     std::vector<unsigned char> sorted_vec(vec.size());
     for (std::size_t i = 0; i < vec.size(); ++i) {
         sorted_vec[i] = vec[p[i]];
     }
 
-    return std::move(sorted_vec);
+    return sorted_vec;
 }
 #endif

@@ -44,33 +44,38 @@ void PDB::setPatternValueAt(size_t locations, size_t permutation, unsigned char 
     pattern_values[locations][permutation] = value;
 }
 
-//---------------------------------------------------------------------------------------
-// this implementation can be improved in terms of cache locality
-//no time for now
-void PDB::fillPatternArray(){
-
+void PDB::fillPatternArray() {
     PDBAbstraction goal_state = PDBAbstraction(Puzzle(rows, columns), pdb_tiles);
     setPatternValueAt(getIndexes(goal_state), 0);
 
     unsigned char current_level = 0;
     size_t entries_filled = 1;
 
-    while (entries_filled > 0){
-        std::cout << "current level: " << +current_level << std::endl;
-        entries_filled = 0;
-        //done with two loops to better accomodate the indexation logic so far. 
-        //it could easily be done with only one loop by changing from array to matrix coordinates
-        for (size_t locations = 0; locations < total_tile_locations; locations++){
-            for(size_t permutation = 0; permutation < total_tile_permutations; permutation++){
-               // std::cout << "indexes: " << locations << "\t" << permutation << "\n"; 
+    while (entries_filled > 0) {
+        std::cout << "Current Level: " << +current_level << std::endl;
+        size_t local_entries_filled = 0;
 
-                if (patternValueAt(locations, permutation) == current_level){
-                    PDBAbstraction current(unindex(locations, permutation));
-                    
-                    entries_filled += expandAndUpdate(current, current_level);
+        omp_set_num_threads(omp_get_max_threads());
+        #pragma omp parallel
+        {
+            size_t private_entries_filled = 0;
+
+            #pragma omp for schedule(dynamic, 15)
+            for (size_t locations = 0; locations < total_tile_locations; locations++) {
+                for (size_t permutation = 0; permutation < total_tile_permutations; permutation++) {
+
+                    if (patternValueAt(locations, permutation) == current_level) {
+                        PDBAbstraction current(unindex(locations, permutation));
+                        private_entries_filled += expandAndUpdate(current, current_level);
+                    }
                 }
             }
+
+            #pragma omp atomic
+            local_entries_filled += private_entries_filled;
         }
+
+        entries_filled = local_entries_filled; 
         current_level++;
     }
 }
@@ -101,8 +106,8 @@ void PDB::shapePatternArray(){
     total_tile_permutations = IndexingFunctions::factorial(n_pdb_tiles);
 
     pattern_values = std::vector<std::vector<unsigned char>>(
-        total_tile_locations,
-        std::vector<unsigned char>(total_tile_permutations, INFINITY)
+         total_tile_locations,
+         std::vector<unsigned char>(total_tile_permutations, INFINITY)
     );
 }
 

@@ -257,13 +257,13 @@ bool Puzzle::isSolved() const{
 std::vector<unsigned char> Puzzle::getPuzzleAsString () const{
     auto buffer = board.getRawPointer();
     std::vector <unsigned char> string(buffer[0], buffer[0] + board.getRows() * board.getColumns()); 
-    return std::move(string);
+    return string;
 }
 
 std::vector<char> Puzzle::getPuzzleAsSignedString () const{
     char** buffer = (char**)board.getRawPointer();
     std::vector <char> string(buffer[0], buffer[0] + board.getRows() * board.getColumns()); 
-    return std::move(string);
+    return string;
 }
 
 std::tuple<unsigned char, unsigned char> Puzzle::getPositionOfEmpty() const{
