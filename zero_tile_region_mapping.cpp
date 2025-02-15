@@ -12,11 +12,26 @@ unsigned char ZeroRegionMapping::getZeroRegion(const std::vector<unsigned char>&
 unsigned char ZeroRegionMapping::getZeroRegion(const std::vector<unsigned char>& locations, unsigned char zero_tile_location){
     return look_up_tables[locations.size()][IndexingFunctions::toCombinadicBase(locations)][zero_tile_location];
 }
+unsigned char ZeroRegionMapping::getZeroRegion(size_t locations, std::tuple<unsigned char, unsigned char> zero_tile_location){
+    return look_up_tables[k_abstraction_tiles][locations][std::get<0>(zero_tile_location) * puzzle_columns + std::get<1>(zero_tile_location)];
+}
+unsigned char ZeroRegionMapping::getZeroRegion(size_t locations, unsigned char zero_tile_location){
+    return look_up_tables[k_abstraction_tiles][locations][zero_tile_location];
+}
+
 std::unordered_set<unsigned char> ZeroRegionMapping::getTilesOfRegion(const std::vector<unsigned char>& locations, unsigned char region){
     return zero_tile_sets[locations.size()][IndexingFunctions::toCombinadicBase(locations)][region];
 }
+std::unordered_set<unsigned char> ZeroRegionMapping::getTilesOfRegion(size_t locations, unsigned char region){
+    return zero_tile_sets[k_abstraction_tiles][locations][region];
+}
 
-
+unsigned char ZeroRegionMapping::getAmountOfRegions (const std::vector<unsigned char>& locations){
+    return zero_tile_sets[locations.size()][IndexingFunctions::toCombinadicBase(locations)].size();
+}
+unsigned char ZeroRegionMapping::getAmountOfRegions (size_t locations){
+    return zero_tile_sets[k_abstraction_tiles][locations].size();
+}
 
 ZeroRegionMapping::ZeroRegionMapping(unsigned char puzzle_rows,
                                      unsigned char puzzle_columns,

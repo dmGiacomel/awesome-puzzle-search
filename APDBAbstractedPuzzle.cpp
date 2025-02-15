@@ -12,6 +12,15 @@ APDBAbstraction::APDBAbstraction (const std::vector<unsigned char>& initial_tile
     setBoard(initial_tile_permutation, initial_tile_locations, zero_position);
 }
 
+APDBAbstraction::APDBAbstraction (const std::vector<unsigned char>& initial_tile_permutation,
+                    const std::vector<unsigned char>& initial_tile_locations,
+                    int puzzle_rows, int puzzle_columns, unsigned char zero_tile_region)
+    :Puzzle(puzzle_rows,puzzle_columns), zero_map(puzzle_rows, puzzle_columns, initial_tile_locations.size())
+{
+    auto zero_tile_candidate{*zero_map.getTilesOfRegion(initial_tile_locations, zero_tile_region).begin()};
+    setBoard(initial_tile_permutation, initial_tile_locations, std::make_tuple(zero_tile_candidate / puzzle_columns, zero_tile_candidate % puzzle_columns));
+}
+
 APDBAbstraction::APDBAbstraction (const Puzzle& p, const std::vector<unsigned char>& pdb_tiles)
     :Puzzle(p), zero_map(p.getBoard().getRows(), p.getBoard().getColumns(), pdb_tiles.size())
 {

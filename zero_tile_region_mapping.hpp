@@ -20,7 +20,15 @@ public:
     
     unsigned char getZeroRegion(const std::vector<unsigned char>& locations, std::tuple<unsigned char, unsigned char> zero_tile_location);
     unsigned char getZeroRegion(const std::vector<unsigned char>& locations, unsigned char zero_tile_location);
+    unsigned char getZeroRegion(size_t locations, std::tuple<unsigned char, unsigned char> zero_tile_location);
+    unsigned char getZeroRegion(size_t locations, unsigned char zero_tile_location);
+
     std::unordered_set<unsigned char> getTilesOfRegion(const std::vector<unsigned char>& locations, unsigned char region);
+    std::unordered_set<unsigned char> getTilesOfRegion(size_t locations, unsigned char region);
+
+    unsigned char getAmountOfRegions (const std::vector<unsigned char>& locations);
+    unsigned char getAmountOfRegions (size_t locations);
+
 
     static void fillLookupTables(unsigned char puzzle_rows, unsigned char puzzle_columns); 
 private:

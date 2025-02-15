@@ -3,15 +3,15 @@
 #include "Heuristics.hpp"
 #include "../Utils/IndexFunctions.hpp"
 #include "../Utils/MovementsHandler.hpp"
-#include <queue>
 #include <set>
 #include <tuple>
-#include <list>
 #include <vector>
 #include "../puzzle_n_minus_1.hpp"
 #include <map>
 #include "../APDBAbstractedPuzzle.hpp"
 #include <omp.h>
+#include "../zero_tile_region_mapping.hpp"
+#include <algorithm>
 
 const unsigned char INFINITY = UCHAR_MAX;
 
@@ -35,12 +35,15 @@ public:
 private:
 
     void shapePatternArray();
-    void shapeTempZpd();
+    void shapeTempZpdb();
     void fillPatternArray();
+    void collapseZpdbToApdb();
+    void clearZPD();
+
 
     std::tuple<size_t, size_t> getIndexes(const APDBAbstraction& abs);
-    APDBAbstraction unindex (size_t locations, size_t permutation); 
-    APDBAbstraction unindex (const std::tuple<size_t, size_t>& indexes); 
+    APDBAbstraction unindex (size_t locations, size_t permutation, unsigned char zero_tile_region); 
+    APDBAbstraction unindex (const std::tuple<size_t, size_t, unsigned char>& indexes); 
 
     unsigned char patternValueAt(const std::tuple<size_t, size_t>& indexes);
     unsigned char patternValueAt(size_t locations, size_t permutation);
@@ -58,7 +61,17 @@ private:
     
     std::vector<unsigned char> pdb_tiles;
     std::vector<std::vector<unsigned char>> pattern_values;
-    std::vector<std::vector<std::vector<unsigned char>>> temp_zpd;
+    std::vector<std::vector<std::vector<unsigned char>>> temp_zpdb;
 
+    std::tuple<size_t, size_t, unsigned char> getIndexesZPDB(const APDBAbstraction& abs);
+
+    APDBAbstraction unindexZPDB (size_t locations, size_t permutation, unsigned char zero_tile_region); 
+    APDBAbstraction unindexZPDB (const std::tuple<size_t, size_t, unsigned char>& indexes); 
+
+    unsigned char patternValueAtZPDB(const std::tuple<size_t, size_t, unsigned char>& indexes);
+    unsigned char patternValueAtZPDB(size_t locations, size_t permutation, unsigned char zero_tile_region);
+
+    void setPatternValueAtZPDB(const std::tuple<size_t, size_t, unsigned char>& indexes, unsigned char value);
+    void setPatternValueAtZPDB(size_t locations, size_t permutation, unsigned char zero_tile_location, unsigned char value);
 };
 #endif

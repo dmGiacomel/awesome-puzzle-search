@@ -22,6 +22,10 @@ public:
                     const std::vector<unsigned char>& initial_tile_locations,
                     int puzzle_rows, int puzzle_columns, std::tuple <unsigned char, unsigned char> zero_position);
 
+    APDBAbstraction (const std::vector<unsigned char>& initial_tile_permutation,
+                    const std::vector<unsigned char>& initial_tile_locations,
+                    int puzzle_rows, int puzzle_columns, unsigned char zero_tile_region);
+
     APDBAbstraction (const Puzzle& state, const std::vector<unsigned char>& pdb_tiles);
 
     ~APDBAbstraction ();
