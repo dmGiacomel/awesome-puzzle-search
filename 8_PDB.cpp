@@ -4,19 +4,22 @@
 #include "Utils/IndexFunctions.hpp"
 
 #include "Heuristics/PDB.hpp"
-#include "Heuristics/APDB.hpp"
-#include "Heuristics/APDBSet.hpp"
+// #include "Heuristics/APDB.hpp"
+// #include "Heuristics/APDBSet.hpp"
 #include "Heuristics/Manhattan.hpp"
-#include "Heuristics/MisplacedTileCount.hpp"
-#include "Heuristics/Zero.hpp"
+// #include "Heuristics/MisplacedTileCount.hpp"
+// #include "Heuristics/Zero.hpp"
 
 #include "Algorithms/AStar.hpp"
 #include "Algorithms/IDAStar.hpp"
 
-const size_t N_RANDOM_INSTANCES = 50000;
+
+//g++ -Ofast -fopenmp 8_PDB.cpp Algorithms/IDAStar.cpp Heuristics/Heuristics.cpp Heuristics/PDB.cpp Algorithms/SearchNode.cpp Algorithms/AStar.cpp Utils/IndexFunctions.cpp Utils/MovementsHandler.cpp puzzle_n_minus_1.cpp PDBAbstractedPuzzle.cpp -o 8_PDB.x
+
+const size_t N_RANDOM_INSTANCES = 5000;
 const int rows = 3;
 const int columns = 3;
-const int N_RANDOM_MOVES = 10000;
+const int N_RANDOM_MOVES = 1000;
 const int seed_value = 42;
 
 Puzzle getRandomPuzzleInstance(){

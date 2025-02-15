@@ -17,7 +17,6 @@
 //g++ -Ofast -fopenmp 15_PDB.cpp Algorithms/IDAStar.cpp Heuristics/Heuristics.cpp Heuristics/PDB.cpp Heuristics/Manhattan.cpp Heuristics/MisplacedTileCount.cpp Heuristics/Zero.cpp Algorithms/SearchNode.cpp Algorithms/AStar.cpp Utils/IndexFunctions.cpp Utils/MovementsHandler.cpp puzzle_n_minus_1.cpp PDBAbstractedPuzzle.cpp -o 15_PDB.x
 
 
-
 const size_t N_RANDOM_INSTANCES = 1000;
 const int rows = 4;
 const int columns = 4;

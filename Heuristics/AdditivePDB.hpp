@@ -35,6 +35,7 @@ public:
 private:
 
     void shapePatternArray();
+    void shapeTempZpd();
     void fillPatternArray();
 
     std::tuple<size_t, size_t> getIndexes(const APDBAbstraction& abs);
@@ -57,6 +58,7 @@ private:
     
     std::vector<unsigned char> pdb_tiles;
     std::vector<std::vector<unsigned char>> pattern_values;
+    std::vector<std::vector<std::vector<unsigned char>>> temp_zpd;
 
 };
 #endif

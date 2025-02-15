@@ -52,7 +52,7 @@ void APDB::fillPatternArray() {
     size_t entries_filled = 1;
 
     while (entries_filled > 0) {
-        // std::cout << "Current Level: " << +current_level << std::endl;
+        std::cout << "Current Level: " << +current_level << std::endl;
         size_t local_entries_filled = 0;
 
         omp_set_num_threads(omp_get_max_threads());
@@ -100,8 +100,8 @@ size_t APDB::expandAndUpdate(APDBAbstraction& p, unsigned char current_level){
 }
 
 void APDB::shapePatternArray(){
-    
-    n_pdb_tiles = pdb_tiles.size() + 1;//+1 because pdb_tiles disregard zero;
+    std::cout << "shaping pattern array\n";
+    n_pdb_tiles = pdb_tiles.size();
     total_tile_locations  = IndexingFunctions::binomialCoef(rows * columns, n_pdb_tiles); 
     total_tile_permutations = IndexingFunctions::factorial(n_pdb_tiles);
 
@@ -109,6 +109,14 @@ void APDB::shapePatternArray(){
          total_tile_locations,
          std::vector<unsigned char>(total_tile_permutations, INFINITY)
     );
+}
+
+void APDB::shapeTempZpd(){
+    std::cout << "shaping temp zpd\n";
+
+    n_pdb_tiles = pdb_tiles.size();
+    total_tile_locations  = IndexingFunctions::binomialCoef(rows * columns, n_pdb_tiles); 
+    total_tile_permutations = IndexingFunctions::factorial(n_pdb_tiles);
 }
 
 size_t APDB::verify(){
@@ -153,8 +161,9 @@ bool APDB::build (const Puzzle& initial_state, const Puzzle& goal_state, const s
     std::sort(this->pdb_tiles.begin(), this->pdb_tiles.end());
 
     shapePatternArray();
+    shapeTempZpdb();
     fillPatternArray();
-    //histogram();
+    histogram();
 
     return true;
 }
