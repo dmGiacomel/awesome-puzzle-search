@@ -1,6 +1,7 @@
 #ifndef ZERO_TILE_REGION_MAPPING_HPP
 #define ZERO_TILE_REGION_MAPPING_HPP
 #include "Utils/IndexFunctions.hpp"
+#include <iostream>
 #include <unordered_set>
 #include <queue>
 #include <tuple>
@@ -17,8 +18,9 @@ public:
                       unsigned char puzzle_columns,
                       unsigned char k_abstraction_tiles);
     
-    unsigned char getZeroRegion(std::vector<unsigned char> locations, std::tuple<unsigned char, unsigned char> zero_tile_location);
-    unsigned char getZeroRegion(std::vector<unsigned char> locations, unsigned char zero_tile_location);
+    unsigned char getZeroRegion(const std::vector<unsigned char>& locations, std::tuple<unsigned char, unsigned char> zero_tile_location);
+    unsigned char getZeroRegion(const std::vector<unsigned char>& locations, unsigned char zero_tile_location);
+    std::unordered_set<unsigned char> getTilesOfRegion(const std::vector<unsigned char>& locations, unsigned char region);
 
     static void fillLookupTables(unsigned char puzzle_rows, unsigned char puzzle_columns); 
 private:
@@ -29,8 +31,9 @@ private:
 
     //look_up_tables [k_abstraction_tiles][locations][zero_tile_position]
     //done in a sparse way in the name of performance
+    //kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
     static std::vector<std::vector<std::vector<unsigned char>>> look_up_tables;
-    static std::vector<std::vector<std::unordered_set<unsigned char>>> zero_tile_sets;
+    static std::vector<std::vector<std::vector<std::unordered_set<unsigned char>>>> zero_tile_sets;
 
     static void fillLevel(size_t k_level, size_t tile_locations, unsigned char puzzle_rows, unsigned char puzzle_columns);
     static void findAndFillBlankRegions(size_t k_level, size_t tile_locations, std::vector<std::vector<unsigned char>> &board, unsigned char puzzle_rows, unsigned char puzzle_columns);

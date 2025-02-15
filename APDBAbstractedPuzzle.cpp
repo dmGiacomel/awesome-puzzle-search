@@ -5,46 +5,42 @@
 
 //the class object can be reused in order to avoid Puzzle object allocations
 APDBAbstraction::APDBAbstraction (const std::vector<unsigned char>& initial_tile_permutation,
-                                const std::vector<unsigned char>& initial_tile_locations,
-                                int puzzle_rows, int puzzle_columns)
-    :Puzzle(puzzle_rows,puzzle_columns)
+                                  const std::vector<unsigned char>& initial_tile_locations,
+                                  int puzzle_rows, int puzzle_columns, std::tuple<unsigned char, unsigned char> zero_position)
+    :Puzzle(puzzle_rows,puzzle_columns), zero_map(puzzle_rows, puzzle_columns, initial_tile_locations.size())
 {
-    setBoard(initial_tile_permutation, initial_tile_locations);
+    setBoard(initial_tile_permutation, initial_tile_locations, zero_position);
 }
 
 APDBAbstraction::APDBAbstraction (const Puzzle& p, const std::vector<unsigned char>& pdb_tiles)
-    :Puzzle(p)
+    :Puzzle(p), zero_map(p.getBoard().getRows(), p.getBoard().getColumns(), pdb_tiles.size())
 {
 
     size_t pdb_tiles_size = pdb_tiles.size();
-
-    std::vector<unsigned char> tile_locations(pdb_tiles_size + 1); //0 is no counted on pdb_tiles 
+    std::vector<unsigned char> tile_locations(pdb_tiles_size); //0 is no counted on pdb_tiles 
     std::vector<unsigned char> dual_state(IndexingFunctions::getDual(p.getPuzzleAsString()));
 
-    tile_locations[0] = dual_state[0];
     for(size_t i = 0; i < pdb_tiles_size; i++){
-        tile_locations[i + 1] = dual_state[pdb_tiles[i]];
+        tile_locations[i] = dual_state[pdb_tiles[i]];
     }
 
     auto permutation = IndexingFunctions::sortPermutation(tile_locations);
     
     tile_locations = IndexingFunctions::applyPermutation(tile_locations, permutation);
 
-
-    setBoard(permutation, tile_locations);
-
+    setBoard(permutation, tile_locations, position_of_empty);
 }
 
 
 APDBAbstraction::APDBAbstraction(const APDBAbstraction& other)
     :Puzzle(other), tile_locations(other.tile_locations), tile_permutation(other.tile_permutation),
-    tile_permutation_dual(other.tile_permutation_dual) 
+    tile_permutation_dual(other.tile_permutation_dual), zero_map(other.getBoard().getRows(), other.getBoard().getColumns(), other.tile_locations.size())
 {
     
 }
 
 APDBAbstraction::APDBAbstraction(APDBAbstraction&& other) noexcept
-    :Puzzle(std::move(other)), tile_locations(std::move(other.tile_locations)), tile_permutation(std::move(other.tile_permutation)),
+    :zero_map(other.getBoard().getRows(), other.getBoard().getColumns(), other.tile_locations.size()), Puzzle(std::move(other)), tile_locations(std::move(other.tile_locations)), tile_permutation(std::move(other.tile_permutation)),
     tile_permutation_dual(std::move(other.tile_permutation_dual))
 {
 
@@ -75,11 +71,13 @@ APDBAbstraction& APDBAbstraction::operator=(APDBAbstraction&& other) noexcept{
 
     return *this;
 }
+
 APDBAbstraction::~APDBAbstraction(){}
 
 void APDBAbstraction::setBoard(const std::vector<unsigned char>& initial_tile_permutation,
-                              const std::vector<unsigned char>& initial_tile_locations){
-     
+                              const std::vector<unsigned char>& initial_tile_locations, std::tuple<unsigned char, unsigned char> zero_tile_location){
+    
+    position_of_empty = zero_tile_location;
 
     this->tile_locations = initial_tile_locations;
 
@@ -104,12 +102,6 @@ void APDBAbstraction::setBoard(const std::vector<unsigned char>& initial_tile_pe
             tile_vector_iterator++;
         }
     }    
-
-    //not checking for errors at all. use it perfectly under the proper conditions
-    auto position_of_empty_in_tile_vector = tile_locations[tile_permutation_dual[0]];
-
-    position_of_empty = std::make_tuple((unsigned char)(position_of_empty_in_tile_vector / puzzle_columns), 
-                                        (unsigned char)(position_of_empty_in_tile_vector % puzzle_columns));
 }
 
 std::vector<unsigned char> APDBAbstraction::getAbstractVector(int puzzle_size) const{
@@ -124,6 +116,8 @@ std::vector<unsigned char> APDBAbstraction::getAbstractVector(int puzzle_size) c
         abstracted_board[i] = tile_permutation[tile_perm_index++];
     }
 
+    abstracted_board[std::get<0>(position_of_empty) * board.getColumns() + std::get<1>(position_of_empty)] = 0;
+
     return abstracted_board;
 }
 
@@ -135,14 +129,20 @@ const std::vector<unsigned char>& APDBAbstraction::getLocations() const{
     return tile_locations;
 }
 
+void APDBAbstraction::printAbstraction(){
 
-void PDBAbstraction::printAbstraction(){
+    const auto zero_tile_region = zero_map.getZeroRegion(tile_locations, position_of_empty);
+    const auto &zero_region_tile_set = zero_map.getTilesOfRegion(tile_locations, zero_tile_region);
 
     auto rows = board.getRows();
     auto columns = board.getColumns();
     for (int i = 0; i < rows; i++){
         for(int j = 0; j < columns; j++){
-            if (board.getValueAt(i,j) == ABSTRACTED_TILE){
+            //if tile is in zero_tile region
+            if (zero_region_tile_set.find(i * columns + j) != zero_region_tile_set.cend()){
+                std::cout << "z\t";
+            }
+            else if (board.getValueAt(i,j) == ABSTRACTED_TILE){
                 std::cout << "x\t";
             }else{
                 std::cout << +board.getValueAt(i,j) << "\t";
@@ -191,20 +191,14 @@ bool APDBAbstraction::makeMove(moves move){
         auto new_moved_tile_vector_position = old_zero_tile_row * puzzle_columns + old_zero_tile_column;
         auto new_zero_tile_vector_position = new_zero_tile_row * puzzle_columns + new_zero_tile_column;
 
-        if (swaped_tile != ABSTRACTED_TILE){    //combination is the same
+        // if zero changed with abstracted tile. permutation is the same, locations are the same, nothing changed.
+        //zero tile region would be the same too  
 
-            std::swap(tile_permutation[tile_permutation_dual[0]],
-                      tile_permutation[tile_permutation_dual[swaped_tile]]);
-
-            std::swap(tile_permutation_dual[0], tile_permutation_dual[swaped_tile]);
-
-        }else{                                  //combination changed
-
-            //updating and sorting tile locations with new location of blank tile
-            //if there were time to do it, changing the locations to a std::set would suit better
-            //because of red black tree properties. no sorting would be needed. the board sizes and PDB
-            //wont be very large anyways.
-            tile_locations[tile_permutation_dual[0]] = new_zero_tile_vector_position;
+        //combination changed
+        //permutation might have changed too
+        if (swaped_tile != ABSTRACTED_TILE){                                  
+            
+            tile_locations[tile_permutation_dual[swaped_tile]] = new_moved_tile_vector_position;
             std::sort(tile_locations.begin(), tile_locations.end());
 
             //updating permutation according to new locations
@@ -215,7 +209,6 @@ bool APDBAbstraction::makeMove(moves move){
                                                        tile_locations[i] % puzzle_columns);
                 tile_permutation_dual[tile_permutation[i]] = i;
             }
-
         }
 
         return true;

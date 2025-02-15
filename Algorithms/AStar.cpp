@@ -49,9 +49,9 @@ std::list<moves> AStar::solve(const Puzzle& initial_state,
     auto end = std::chrono::high_resolution_clock::now();
 
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
-    // std::cout << duration.count() << " ";
-    // std::cout << nodes_expanded << " " ;
-    // std::cout << double(summed_heuristics)/nodes_expanded;
+    std::cout << duration.count() << " ";
+    std::cout << nodes_expanded << " " ;
+    std::cout << double(summed_heuristics)/nodes_expanded;
 
     return path;
 }

@@ -1,51 +1,51 @@
-#ifndef PDB_CPP
-#define PDB_CPP
-#include "PDB.hpp"
+#ifndef ADDITIVE_PDB_CPP
+#define ADDITIVE_PDH_CPP
+#include "AdditivePDB.hpp"
 
-int PDB::evaluate (const Puzzle& puzzle_state){
-    return patternValueAt(getIndexes(PDBAbstraction(puzzle_state, pdb_tiles)));
+int APDB::evaluate (const Puzzle& puzzle_state){
+    return patternValueAt(getIndexes(APDBAbstraction(puzzle_state, pdb_tiles)));
 }
 
 //shame on me, it will not be fixed though
-bool PDB::build (const Puzzle& initial_state, const Puzzle& goal_state){
+bool APDB::build (const Puzzle& initial_state, const Puzzle& goal_state){
     return true;
 }
 
-std::tuple<size_t, size_t> PDB::getIndexes(const PDBAbstraction& abs){
+std::tuple<size_t, size_t> APDB::getIndexes(const APDBAbstraction& abs){
     return std::make_tuple(IndexingFunctions::toCombinadicBase(abs.getLocations()),
                            IndexingFunctions::rank(abs.getPermutation()));
 }
 
-unsigned char PDB::patternValueAt(const std::tuple<size_t, size_t>& indexes){
+unsigned char APDB::patternValueAt(const std::tuple<size_t, size_t>& indexes){
     return pattern_values[std::get<0>(indexes)][std::get<1>(indexes)];
 }
 
-unsigned char PDB::patternValueAt(size_t locations, size_t permutation){
+unsigned char APDB::patternValueAt(size_t locations, size_t permutation){
     return pattern_values[locations][permutation];
 }
 
-PDBAbstraction PDB::unindex (size_t locations, size_t permutation){
-    return PDBAbstraction(IndexingFunctions::unrank(permutation, n_pdb_tiles), 
+APDBAbstraction APDB::unindex (size_t locations, size_t permutation){
+    return APDBAbstraction(IndexingFunctions::unrank(permutation, n_pdb_tiles), 
                           IndexingFunctions::combinationFromRank(locations, n_pdb_tiles),
                           rows, columns);
 }
 
-PDBAbstraction PDB::unindex (const std::tuple<size_t, size_t>& indexes){
-    return PDBAbstraction(IndexingFunctions::unrank(std::get<0>(indexes), n_pdb_tiles), 
+APDBAbstraction APDB::unindex (const std::tuple<size_t, size_t>& indexes){
+    return APDBAbstraction(IndexingFunctions::unrank(std::get<0>(indexes), n_pdb_tiles), 
                           IndexingFunctions::combinationFromRank(std::get<1>(indexes), n_pdb_tiles),
                           rows, columns);
 }
 
-void PDB::setPatternValueAt(const std::tuple<size_t, size_t>& indexes, unsigned char value){
+void APDB::setPatternValueAt(const std::tuple<size_t, size_t>& indexes, unsigned char value){
     pattern_values[std::get<0>(indexes)][std::get<1>(indexes)] = value;
 }
 
-void PDB::setPatternValueAt(size_t locations, size_t permutation, unsigned char value){
+void APDB::setPatternValueAt(size_t locations, size_t permutation, unsigned char value){
     pattern_values[locations][permutation] = value;
 }
 
-void PDB::fillPatternArray() {
-    PDBAbstraction goal_state = PDBAbstraction(Puzzle(rows, columns), pdb_tiles);
+void APDB::fillPatternArray() {
+    APDBAbstraction goal_state = APDBAbstraction(Puzzle(rows, columns), pdb_tiles);
     setPatternValueAt(getIndexes(goal_state), 0);
 
     unsigned char current_level = 0;
@@ -65,7 +65,7 @@ void PDB::fillPatternArray() {
                 for (size_t permutation = 0; permutation < total_tile_permutations; permutation++) {
 
                     if (patternValueAt(locations, permutation) == current_level) {
-                        PDBAbstraction current(unindex(locations, permutation));
+                        APDBAbstraction current(unindex(locations, permutation));
                         private_entries_filled += expandAndUpdate(current, current_level);
                     }
                 }
@@ -82,7 +82,7 @@ void PDB::fillPatternArray() {
 
 //all using references and accessing caller's memory in the hope of better performance
 //should change neighbours size if needed
-size_t PDB::expandAndUpdate(PDBAbstraction& p, unsigned char current_level){
+size_t APDB::expandAndUpdate(APDBAbstraction& p, unsigned char current_level){
     size_t updated{0};
 
     for (auto i : {right, up, left, down}){
@@ -99,7 +99,7 @@ size_t PDB::expandAndUpdate(PDBAbstraction& p, unsigned char current_level){
     return updated;
 }
 
-void PDB::shapePatternArray(){
+void APDB::shapePatternArray(){
     
     n_pdb_tiles = pdb_tiles.size() + 1;//+1 because pdb_tiles disregard zero;
     total_tile_locations  = IndexingFunctions::binomialCoef(rows * columns, n_pdb_tiles); 
@@ -111,7 +111,7 @@ void PDB::shapePatternArray(){
     );
 }
 
-size_t PDB::verify(){
+size_t APDB::verify(){
     size_t slots_not_reached = 0;
     for (auto &i : pattern_values){
         for (auto j : i){
@@ -125,7 +125,7 @@ size_t PDB::verify(){
 }
 
 
-void PDB::histogram(){
+void APDB::histogram(){
     
     std::map<unsigned char, size_t> hist;
 
@@ -144,7 +144,7 @@ void PDB::histogram(){
 }
 //---------------------------- DO NOT PASS 0 AS ARGUMENT INSIDE OF PDB_TILES ------------------
 //---------------------------- please ---------------------------------------------------------
-bool PDB::build (const Puzzle& initial_state, const Puzzle& goal_state, const std::vector<unsigned char>& pdb_tiles){
+bool APDB::build (const Puzzle& initial_state, const Puzzle& goal_state, const std::vector<unsigned char>& pdb_tiles){
     rows = initial_state.getBoard().getRows();
     columns = initial_state.getBoard().getColumns();
 
@@ -159,11 +159,12 @@ bool PDB::build (const Puzzle& initial_state, const Puzzle& goal_state, const st
     return true;
 }
 
-PDB::PDB(){
+APDB::APDB(){
 
 }
 
-PDB::~PDB(){
+APDB::~APDB(){
 
 }
+
 #endif
